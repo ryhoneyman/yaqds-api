@@ -1,0 +1,69 @@
+{
+   "/ad/{user}": {
+      "GET": {
+         "name": "Get AD User Details",
+         "description": "",
+         "controller": "ADController",
+         "function": "userDetails",
+         "category": "Active Directory",
+         "filter": { "user": { "required": true, "constraint": "string", "description": "The unique identifier for the user." } },
+         "param": {},
+         "response": { "user": { "type": "string", "description": "The user you asked for" }, "details": { "type": "array", "description": "The user details" } }
+      }
+   },
+   "/ad/{user}/attrib/{attrib}": {
+      "GET": {
+         "name": "Get User Attribute",
+         "description": "",
+         "controller": "ADController",
+         "function": "userAttrib",
+         "category": "Active Directory",
+         "filter": { "user": { "required": true, "constraint": "string", "description": "The unique identifier for the user." }, "attrib": { "required": true, "constraint": "string", "description": "The attribute for the user." } },
+         "param": {}
+      }
+   },
+   "/ad/{user}/exists": {
+      "GET": {
+         "name": "Get User Existance",
+         "description": "",
+         "controller": "ADController",
+         "function": "userExists",
+         "category": "Active Directory",
+         "filter": { "user": { "required": true, "constraint": "string", "description": "The unique identifier for the user." } },
+         "param": {}
+      }
+   },
+   "/ad/{user}/groups": {
+      "GET": {
+         "name": "Get User AD Groups",
+         "description": "",
+         "controller": "ADController",
+         "function": "userGroups",
+         "category": "Active Directory",
+         "filter": { "user": { "required": true, "constraint": "string", "description": "The unique identifier for the user." } },
+         "param": {}
+      }
+   },
+   "/ad/{user}/mail": {
+      "GET": {
+         "name": "Get AD User Mail Address",
+         "description": "",
+         "controller": "ADController",
+         "function": "userMail",
+         "category": "Active Directory",
+         "filter": { "user": { "required": true, "constraint": "string", "description": "The unique identifier for the user." } },
+         "param": {}
+      }
+   },
+   "/ad/{user}/dn": {
+      "GET": {
+         "name": "Get AD User DN",
+         "description": "",
+         "controller": "ADController",
+         "function": "userDN",
+         "category": "Active Directory",
+         "filter": { "user": { "required": true, "constraint": "string", "description": "The unique identifier for the user." } },
+         "param": {}
+      }
+   }
+}

@@ -1,0 +1,10 @@
+#!/usr/bin/php
+<?php
+
+$input = $argv[1];
+
+var_dump($input);
+
+var_dump(base64_encode($input));
+
+?>

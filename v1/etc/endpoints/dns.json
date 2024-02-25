@@ -1,0 +1,14 @@
+{
+   "/dns/query/{query}": {
+      "GET": {
+         "name": "Perform DNS Query",
+         "description": "",
+         "controller": "DNSController",
+         "function": "query",
+         "category": "Domain Name Service",
+         "filter": { "query": { "required": true, "constraint": "string", "description": "The DNS information to query." } },
+         "param": {},
+         "response": { "query": { "type": "string", "description": "The DNS that was requested" }, "results": { "type": "array", "description": "The DNS details" } }
+      }
+   }
+}

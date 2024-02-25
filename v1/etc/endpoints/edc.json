@@ -1,0 +1,17 @@
+{
+  "/edc/{environment}/updateredirect": {
+      "POST": {
+         "name": "Update Redirect",
+         "description": "",
+         "controller": "EDCController",
+         "function": "updateSYSFileDataGroup",
+         "category": "Load Balancer Emerson.com",
+         "filter": { "environment": { "required": true, "constraint": "string", "description": "Load Balancer IP" } },
+         "param": {},
+         "body" : { 
+            "sourcepath": { "required": true, "constraint": "string", "description": "Source Path where the file" }
+         },
+         "response": { "code": { "type": "string", "description": "Result code" }, "data": { "type": "array", "description": "Posted data" }, "result": { "type": "array", "description": "Result after updating redirect data" } }
+      }
+   }    
+} 
