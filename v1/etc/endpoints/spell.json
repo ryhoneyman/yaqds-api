@@ -1,0 +1,34 @@
+{
+   "/spell": {
+      "GET": {
+         "name": "Get All Spells",
+         "description": "",
+         "controller": "SpellController",
+         "function": "getSpellList",
+         "category": "Spell",
+         "filter": {},
+         "param": {
+            "id":   { "required": false, "constraint": "integer", "description": "List data by id.", "default": null },
+            "name": { "required": false, "constraint": "string", "description": "List data starting with this string.", "default": null },
+            "max":  { "required": false, "constraint": "integer", "description": "Limit maximum number of data returned.", "default": null }
+         }
+      }
+   },
+   "/spell/{id}": {
+      "GET": {
+         "name": "Get Spell Info By Id",
+         "description": "",
+         "controller": "SpellController",
+         "function": "getSpellById",
+         "category": "Spell",
+         "filter": {
+            "id": { "required": true, "constraint": "integer", "description": "Id for gathering spell information." }
+         },
+         "param": {
+            "id":   { "required": false, "constraint": "integer", "description": "List data by id.", "default": null },
+            "name": { "required": false, "constraint": "string", "description": "List data starting with this string.", "default": null },
+            "max":  { "required": false, "constraint": "integer", "description": "Limit maximum number of data returned.", "default": null }
+         }
+      }
+   }
+}

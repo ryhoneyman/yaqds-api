@@ -1,0 +1,80 @@
+{
+   "/example/test": {
+      "GET": {
+         "name": "Example Test GET",
+         "description": "",
+         "controller": "ExampleController",
+         "function": "exampleMethod1",
+         "category": "Example",
+         "filter": {},
+         "param": {
+            "id":   { "required": false, "constraint": "integer", "description": "List data by id.", "default": null },
+            "name": { "required": false, "constraint": "string", "description": "List data starting with this string.", "default": null },
+            "max":  { "required": false, "constraint": "integer", "description": "Limit maximum number of data returned.", "default": null }
+         }
+      },
+      "POST": {
+         "name": "Example Test POST",
+         "description": "",
+         "controller": "ExampleController",
+         "function": "exampleMethod1",
+         "category": "Example",
+         "filter": {},
+         "param": {
+            "id":   { "required": false, "constraint": "integer", "description": "List data by id.", "default": null },
+            "name": { "required": false, "constraint": "string", "description": "List data starting with this string.", "default": null },
+            "max":  { "required": false, "constraint": "integer", "description": "Limit maximum number of data returned.", "default": null }
+         }
+      }
+   },
+   "/example/test/{id}": {
+      "GET": {
+         "name": "Example Test filter GET",
+         "description": "",
+         "controller": "ExampleController",
+         "function": "exampleMethod1",
+         "category": "Example",
+         "filter": { 
+            "id": { "required": false, "constraint": "integer", "description": "The unique identifier for the endpoint." } 
+         },
+         "param": {},
+         "response": { 
+            "data":    { "type": "string", "description": "The data you asked for" }, 
+            "details": { "type": "array", "description": "The data details" } 
+         }
+      },
+      "POST": {
+         "name": "Example Test filter POST",
+         "description": "",
+         "controller": "ExampleController",
+         "function": "exampleMethod1",
+         "category": "Example",
+         "filter": { 
+            "id": { "required": false, "constraint": "integer", "description": "The unique identifier for the endpoint." } 
+         },
+         "param": {},
+         "response": { 
+            "data":    { "type": "string", "description": "The data you asked for" }, 
+            "details": { "type": "array", "description": "The data details" } 
+         }
+      }
+   },
+   "/example/{name}/updatefile": {
+      "POST": {
+         "name": "Example Update Filename",
+         "description": "",
+         "controller": "ExampleController",
+         "function": "exampleMethod1",
+         "category": "Example",
+         "filter": { "name": { "required": true, "constraint": "string", "description": "Data name" } },
+         "param": {},
+         "body" : {
+            "filename": { "required": true, "constraint": "string", "description": "Source file" }
+         },
+         "response": { 
+            "name":   { "type": "string", "description": "Data name" }, 
+            "result": { "type": "array", "description": "Result after updating filename" } 
+         }
+      }
+   }
+}
