@@ -1,0 +1,95 @@
+#!/usr/bin/php
+<?php
+set_include_path(get_include_path().PATH_SEPARATOR.'/opt/epic/api/v2/etc'.PATH_SEPARATOR.'/opt/epic/api/v2/lib'.PATH_SEPARATOR.'/opt/epic/include');
+
+spl_autoload_register('autoLoader');
+
+$starttime = microtime(true);
+
+include_once 'api.conf';
+include_once 'base.class.php';
+include_once 'debug.class.php';
+include_once 'cipher.class.php';
+include_once 'mysql.class.php';
+include_once 'apicore.class.php';
+include_once 'apiauth.class.php';
+
+$debuglevel  = 9;      // global debug level 0(none) - 9(full)
+$debugbuffer = false;
+
+$debug    = new Debug($debuglevel,$debugbuffer);
+$cipher   = new Cipher($debug);
+$dbh      = new MySQL($debug);
+$apicore  = new APICore($debug,$dbh);
+$apiauth  = new APIAuth($debug);
+
+// We couldn't load the database driver
+if (!is_null($dbh)) {
+   $dbh->setParameters(array('host'     => $dbhost,
+                             'dbname'   => $dbname,
+                             'username' => $cipher->decode($dbuser),
+                             'password' => $cipher->decode($dbpass)));
+
+   $dbh->connect();
+}
+
+// libraries to make available to controllers
+$libs = array(
+   'dbh'   => $dbh,
+   'auth'  => $auth,
+   'debug' => $debug,
+);
+
+// If the database is connection, we can proceed
+if ($dbh->connected) {
+   $userid       = 1;
+   $clientId     = $apiauth->generateKey($userid);
+   $clientSecret = $apiauth->generateKey($clientId);
+   $limitrate    = 100;
+   $limitconc    = 10;
+   $rbac         = '["readonly"]';
+
+   $sql    = "insert into api_key (client_id,client_secret,requestor_user_id,jsonrbac,limit_rate,limit_concurrent) values ('%s','%s',%d,'%s',%d,%d)";
+   $insert = sprintf($sql,$clientId,$clientSecret,$userid,$rbac,$limitrate,$limitconc);
+
+   $rc = $dbh->execute($insert);
+
+   print "$insert\nrc: $rc\n";
+}
+
+
+// END MAIN /-----------------------------------------------------------------------
+
+?>
+<?php
+
+function autoLoader($classname)
+{
+   global $debug;
+
+   $lcname = strtolower($classname);
+
+   $debug->trace(9,'Looking for class '.$classname);
+
+   if (preg_match('/[a-z0-9]+(model|view|controller)$/i',$classname,$match)) {
+      $type = strtolower($match[1]);
+      $file .= __DIR__."/{$type}s/$lcname.class.php";
+
+      $debug->trace(9,'Trying to load '.$type.' file: '.$file);
+
+      if (file_exists($file)) {
+         $return = (!@include_once($file)) ? false : true;
+         $debug->trace(9,'File found: '.$file.' [success:'.$return.']');
+         return $return;
+      }
+      else {
+         $debug->trace(9,'File not found: '.$file);
+      }
+   }
+
+   $debug->trace(9,'Class '.$classname.' not valid for autoload.');
+
+   return false;
+}
+
+?>
