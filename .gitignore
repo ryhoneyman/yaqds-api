@@ -1,1 +1,4 @@
-/tokens
+/tokens/**
+!/tokens/**/
+!/tokens/**/.gitkeep
+
