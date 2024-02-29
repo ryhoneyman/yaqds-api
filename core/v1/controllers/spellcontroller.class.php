@@ -47,9 +47,9 @@ class SpellController extends DefaultController
 
       $spellId = $filterData['id'];
 
-      $spellData = array_change_key_case($this->spellModel->getSpellById($spellId));
+      $spellData = $this->spellModel->getSpellById($spellId);
 
-      $this->content['data'] = $spellData;
+      $this->content['data'] = is_array($spellData) ? array_change_key_case($spellData) : $spellData;
 
       $this->statusCode    = 200;
       $this->statusMessage = 'OK';
