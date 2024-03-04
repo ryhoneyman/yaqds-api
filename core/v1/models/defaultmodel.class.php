@@ -32,4 +32,3 @@ class DefaultModel extends Base
       }
    }
 }
-?>

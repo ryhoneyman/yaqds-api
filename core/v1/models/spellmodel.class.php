@@ -2,8 +2,6 @@
 
 class SpellModel extends DefaultModel
 {
-   public $something = null;
-
    public function __construct($debug = null, $main = null)
    {
       parent::__construct($debug,$main);
@@ -29,4 +27,3 @@ class SpellModel extends DefaultModel
       return $result;
    }
 }
-?>

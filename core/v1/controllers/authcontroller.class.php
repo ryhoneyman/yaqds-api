@@ -160,4 +160,3 @@ class AuthController extends DefaultController
       return true;
    }
 }
-?>

@@ -7,4 +7,3 @@ include_once 'common/constantsbase.class.php';
 class Constants extends ConstantsBase
 {
 }
-?>

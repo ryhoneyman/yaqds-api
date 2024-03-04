@@ -65,4 +65,3 @@ class Token extends Base
       $this->limitExceeds = ($this->concurrentExceeds || $this->rateExceeds) ? true : false;
    }
 }
-?>

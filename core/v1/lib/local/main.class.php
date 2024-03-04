@@ -22,6 +22,7 @@ class Main extends MainBase
          if (!$this->buildClass('constants','Constants',null,'local/constants.class.php')) { exit; }
          $this->constants = $this->obj('constants');
       }
+
+      return true;
    }
 }
-?>
