@@ -9,7 +9,14 @@ class DefaultController extends Base
    public $main          = null;
    public $apicore       = null;
    public $ready         = true;
-
+   
+   /**
+    * __construct
+    *
+    * @param  Debug|null $debug
+    * @param  Main|null $main
+    * @return void
+    */
    public function __construct($debug = null, $main = null)
    {
       parent::__construct($debug);
@@ -24,11 +31,9 @@ class DefaultController extends Base
       }
    }
 
-   public function notReady($code = null, $message = null, $error = null)
+   public function notReady($contentError = null, $code = null, $message = null)
    {
-      $this->statusCode = $code ?: 500; 
-      $this->statusMessage = $message ?: 'Server Error'; 
-      $this->setError($error ?: 'An error occurred'); 
+      $this->standardError($contentError,$code,$message);
 
       $this->ready = false;
 
@@ -37,11 +42,21 @@ class DefaultController extends Base
       return true;
    }
 
-   public function setError($contentError)
+   public function standardError($contentError = null, $code = null, $message = null)
    {
-      $this->content = array('error' => $contentError);
+      $this->statusCode    = $code ?: 500; 
+      $this->statusMessage = $message ?: 'Server Error';
+      $this->content       = array('error' => $contentError ?: 'An error occurred');
+
+      return true;
+   }
+
+   public function standardOk($content = null, $code = null, $message = null)
+   {
+      $this->statusCode    = $code ?: 200; 
+      $this->statusMessage = $message ?: 'OK';
+      $this->content       = $content;
 
       return true;
    }
 }
-?>
