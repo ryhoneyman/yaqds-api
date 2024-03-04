@@ -5,6 +5,7 @@ include_once 'local/main.class.php';
 $main = new Main(array(
    'debugLevel'     => 9,
    'debugBuffer'    => true,
+   'debugLogDir'    => V1_LOGDIR,
    'errorReporting' => false,
    'sessionStart'   => false,
    'memoryLimit'    => null,
@@ -19,11 +20,11 @@ spl_autoload_register('autoLoader');
 
 $main->buildClass('apicore','ApiCore',$main->db(),'local/apicore.class.php');
 $main->buildClass('token','Token',null,'local/token.class.php');
-$main->buildClass('request','Request',null,'local/request.class.php');
-$main->buildClass('response','Response',null,'local/response.class.php');
+$main->buildClass('request','Request',null,'common/request.class.php');
+$main->buildClass('response','Response',null,'common/response.class.php');
 $main->buildClass('router','Router',null,'local/router.class.php');
 
-$main->prepareDatabase(APP_CONFIGDIR.'/db-yaqds.conf','yaqds');
+$main->prepareDatabase('db.yaqds.conf','yaqds');
 
 $apicore  = $main->obj('apicore');
 $router   = $main->obj('router');
@@ -39,6 +40,7 @@ $rateLimit = $apiSettings['rateLimit'];
 
 // Set directories for file access
 $apicore->tokenDir   = V1_TOKENDIR;
+$apicore->logDir     = V1_LOGDIR;
 $router->endpointDir = V1_CONFIGDIR.'/endpoints';
 
 // Debug user request object
@@ -276,5 +278,4 @@ function autoLoader($classname)
 
    return false;
 }
-
 ?>
