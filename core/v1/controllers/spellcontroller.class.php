@@ -15,7 +15,7 @@ class SpellController extends DefaultController
       $this->spellModel = new SpellModel($debug,$main); 
 
       // If the model isn't ready we need to flag the controller as not ready and set status
-      if (!$this->spellModel->ready) { $this->notReady(500,'Server Error',$this->spellModel->error); }
+      if (!$this->spellModel->ready) { $this->notReady($this->spellModel->error); }
    }
 
    public function getSpellList($request)
@@ -30,12 +30,9 @@ class SpellController extends DefaultController
 
       $spellList = $this->spellModel->getAll();
 
-      $this->content['data'] = $spellList;
+      $content = array('data' => $spellList);
 
-      $this->statusCode    = 200;
-      $this->statusMessage = 'OK';
-
-      return true;
+      return $this->standardOk($content);
    }
 
    public function getSpellById($request)
@@ -49,12 +46,8 @@ class SpellController extends DefaultController
 
       $spellData = $this->spellModel->getSpellById($spellId);
 
-      $this->content['data'] = is_array($spellData) ? array_change_key_case($spellData) : $spellData;
+      $content = is_array($spellData) ? array_change_key_case($spellData) : $spellData;
 
-      $this->statusCode    = 200;
-      $this->statusMessage = 'OK';
-
-      return true;
+      return $this->standardOk($content);
    }
 }
-?>
