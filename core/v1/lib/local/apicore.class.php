@@ -5,6 +5,7 @@ class APICore extends Base
    protected $version = 1.0;
 
    public $tokenDir   = null;
+   public $logDir     = null;
    public $db         = null;
    public $cacheFiles = null;
 
@@ -356,7 +357,7 @@ class APICore extends Base
  
       $insert = sprintf($sql,$request->token,$request->keyId,$request->pathinfo,$request->method,$response->statusCode,$response->statusMessage,$elapsedtime,$response->contentLength);
 
-      $result = file_put_contents(V1_LOGDIR.'/api.request.log',$insert,FILE_APPEND|LOCK_EX);
+      $result = file_put_contents($this->logDir.'/api.request.log',$insert,FILE_APPEND|LOCK_EX);
 
       return (($result !== false) ? true : false);
    }
