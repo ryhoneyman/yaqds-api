@@ -1,0 +1,11 @@
+{
+    "zone": {
+        "fieldList": {
+            "short_name": { "id": true, "select": true, "sort": true, "filter": true, "type": "string" },
+            "long_name": { "select": true, "sort": true, "filter": true, "type": "string" },
+            "zoneidnumber": { "select": true, "sort": true, "filter": true, "type": "int" },
+            "expansion": { "select": true, "sort": true, "filter": true, "type": "int" },
+            "zone_exp_multiplier": { "select": true, "filter": true, "type": "float" }
+        }
+    }
+}

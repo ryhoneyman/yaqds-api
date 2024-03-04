@@ -1,0 +1,22 @@
+{
+   "/data/provider/{database}": {
+      "GET": {
+         "name": "Get Data From Database",
+         "description": "",
+         "controller": "DataController",
+         "function": "getDataFromDatabase",
+         "category": "Data",
+         "filter": {
+            "database": { "required": true, "constraint": "string", "description": "Name of database." }
+         },
+         "param": {
+            "table":      { "required": true, "constraint": "string", "description": "Database table name", "default": null },
+            "index":      { "required": false, "constraint": "string", "description": "Database table name", "default": null },
+            "sort":       { "required": false, "constraint": "json", "description": "Sort attributes for query", "default": null },
+            "pagination": { "required": false, "constraint": "json", "description": "Pagination attributes for query.", "default": null },
+            "filter":     { "required": false, "constraint": "json", "description": "Filter attributes for query.", "default": null },
+            "column":     { "required": false, "constraint": "json", "description": "Array of columns to return.", "default": null }
+         }
+      }
+   }
+}
