@@ -11,11 +11,26 @@
          },
          "param": {
             "table":      { "required": true, "constraint": "string", "description": "Database table name", "default": null },
-            "index":      { "required": false, "constraint": "string", "description": "Database table name", "default": null },
+            "index":      { "required": false, "constraint": "string", "description": "Index column for data return", "default": null },
             "sort":       { "required": false, "constraint": "json", "description": "Sort attributes for query", "default": null },
-            "pagination": { "required": false, "constraint": "json", "description": "Pagination attributes for query.", "default": null },
-            "filter":     { "required": false, "constraint": "json", "description": "Filter attributes for query.", "default": null },
-            "column":     { "required": false, "constraint": "json", "description": "Array of columns to return.", "default": null }
+            "pagination": { "required": false, "constraint": "json", "description": "Pagination attributes for query", "default": null },
+            "filter":     { "required": false, "constraint": "json", "description": "Filter attributes for query", "default": null },
+            "column":     { "required": false, "constraint": "json", "description": "Array of columns to return", "default": null }
+         }
+      },
+      "PATCH": {
+         "name": "Query Data From Database",
+         "description": "",
+         "controller": "DataController",
+         "function": "queryDatabase",
+         "category": "Data",
+         "filter": {
+            "database": { "required": true, "constraint": "string", "description": "Name of database." }
+         },
+         "param": {
+            "query":      { "required": true, "constraint": "string", "description": "Database query", "default": null },
+            "index":      { "required": false, "constraint": "string", "description": "Index column for data return", "default": null },
+            "single":     { "required": false, "constraint": "boolean", "description": "Return only a single result value", "default": null }
          }
       }
    }
