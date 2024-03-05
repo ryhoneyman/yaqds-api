@@ -4,5 +4,6 @@
 /log/**
 !/log/**/
 !/log/**/.gitkeep
+/etc/db.*
 
 
