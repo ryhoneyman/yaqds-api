@@ -10,13 +10,12 @@ $main = new Main(array(
    'sessionStart'   => false,
    'memoryLimit'    => null,
    'sendHeaders'    => false,
-   'database'       => 'prepare',
+   'autoLoad'       => 'autoLoader',  // we define our own autoLoader function to distinguish between MVC components when loading
+   'database'       => 'prepare',     // we set prepare only because we don't want the database connected for unauthed/improper requests
    'input'          => false,
    'html'           => false,
    'adminlte'       => false,
 ));
-
-spl_autoload_register('autoLoader');
 
 $main->buildClass('apicore','ApiCore',$main->db(),'local/apicore.class.php');
 $main->buildClass('token','Token',null,'local/token.class.php');
@@ -260,18 +259,22 @@ function autoLoader($classname)
 
    if (preg_match('/[a-z0-9]+(model|view|controller)$/i',$classname,$match)) {
       $type = strtolower($match[1]);
-      $file .= V1_BASEDIR."/{$type}s/$lcname.class.php";
+      $file .= V1_BASEDIR."/{$type}s/$lcname.class.php";  
+   }
+   else { 
+      $type = 'global';
+      $file = "$lcname.class.php"; 
+   }
 
-      $main->debug->trace(9,'Trying to load '.$type.' file: '.$file);
+   $main->debug->trace(9,'Trying to load '.$type.' file: '.$file);
 
-      if (file_exists($file)) {
-         $return = (!@include_once($file)) ? false : true;
-         $main->debug->trace(9,'File found: '.$file.' [success:'.$return.']');
-         return $return;
-      }
-      else {
-         $main->debug->trace(9,'File not found: '.$file);
-      }
+   if (file_exists($file)) {
+      $return = (!@include_once($file)) ? false : true;
+      $main->debug->trace(9,'File found: '.$file.' [success:'.$return.']');
+      return $return;
+   }
+   else {
+      $main->debug->trace(9,'File not found: '.$file);
    }
 
    $main->debug->trace(9,'Class '.$classname.' not valid for autoload.');
