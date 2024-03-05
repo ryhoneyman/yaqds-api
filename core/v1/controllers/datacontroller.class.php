@@ -40,6 +40,36 @@ class DataController extends DefaultController
       );
    }
 
+   public function queryDatabase($request)
+   {
+      $this->debug(7,'method called');
+
+      $parameters = $request->parameters;
+      $filterData = $request->filterData;
+
+      $this->debug(9,"parameters: ".json_encode($parameters));
+
+      $input = $this->main->obj('input');
+
+      $dbName       = $input->validate($filterData['database'],'alphanumeric,underscore,dash');
+      $queryFull    = $parameters['query'];
+      $index        = $input->validate($parameters['index'],'alphanumeric,underscore',null);
+      $singleReturn = ($parameters['single']) ? true : false;
+
+      if (!preg_match('/^select/i',$queryFull)) { return $this->standardError("invalid query specified (select only)",500); }
+
+      if (!$this->main->connectDatabase(sprintf("db.%s.conf",$dbName),$dbName)) { return $this->standardError("Could not connect to database $dbName"); }
+
+      $db       = $this->main->db($dbName);
+      $dbResult = $db->query($queryFull,array('keyid' => $index, 'multi' => !$singleReturn));
+
+      if ($dbResult === false) { return $this->standardError("could not query database",500); }
+
+      $returnData = array('results' => $dbResult);
+
+      return $this->standardOk(array('data' => $returnData));
+   }
+
    public function getDataFromDatabase($request)
    {
       $this->debug(7,'method called');
