@@ -1,10 +1,11 @@
 <?php
 include_once 'yaqds-api-init.php';
-include_once 'local/main.class.php';
+include_once 'main.class.php';
 
 $main = new Main(array(
+   'fileDefines'    => null,
    'debugLevel'     => 9,
-   'debugBuffer'    => true,
+   'debugBuffer'    => false,
    'debugLogDir'    => V1_LOGDIR,
    'errorReporting' => false,
    'sessionStart'   => false,
@@ -13,16 +14,17 @@ $main = new Main(array(
    'autoLoad'       => 'autoLoader',  // we define our own autoLoader function to distinguish between MVC components when loading
    'database'       => 'prepare',     // we set prepare only because we don't want the database connected for unauthed/improper requests
    'dbConfigDir'    => APP_CONFIGDIR,
+   'dbDefines'      => null,
    'input'          => false,
    'html'           => false,
    'adminlte'       => false,
 ));
 
-$main->buildClass('apicore','ApiCore',$main->db(),'local/apicore.class.php');
-$main->buildClass('token','Token',null,'local/token.class.php');
-$main->buildClass('request','Request',null,'common/request.class.php');
-$main->buildClass('response','Response',null,'common/response.class.php');
-$main->buildClass('router','Router',null,'local/router.class.php');
+$main->buildClass('apicore','ApiCore',$main->db(),'apicore.class.php');
+$main->buildClass('token','Token',null,'token.class.php');
+$main->buildClass('request','Request',null,'request.class.php');
+$main->buildClass('response','Response',null,'response.class.php');
+$main->buildClass('router','Router',null,'router.class.php');
 
 $main->prepareDatabase('db.yaqds.conf','yaqds');
 
