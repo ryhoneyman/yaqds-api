@@ -12,6 +12,7 @@ $main = new Main(array(
    'sendHeaders'    => false,
    'autoLoad'       => 'autoLoader',  // we define our own autoLoader function to distinguish between MVC components when loading
    'database'       => 'prepare',     // we set prepare only because we don't want the database connected for unauthed/improper requests
+   'dbConfigDir'    => APP_CONFIGDIR,
    'input'          => false,
    'html'           => false,
    'adminlte'       => false,
