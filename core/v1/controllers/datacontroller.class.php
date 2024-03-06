@@ -19,7 +19,7 @@ class DataController extends DefaultController
 
       $this->debug(5,get_class($this).' class instantiated');
 
-      if (!$main->buildClass('input','Input',array('noBody' => true),'common/input.class.php')) { $this->notReady("Input library error"); }
+      if (!$main->buildClass('input','Input',array('noBody' => true),'input.class.php')) { $this->notReady("Input library error"); }
    
       $this->fieldQualifiers = array(
          'startswith' => array('validFor' => array('string')),
