@@ -2,7 +2,7 @@
 
 //    Copyright 2023 - Ryan Honeyman
 
-include_once 'common/mainbase.class.php';
+include_once 'mainbase.class.php';
 
 class Main extends MainBase
 {
@@ -19,7 +19,7 @@ class Main extends MainBase
       parent::initialize($options);
 
       if ($options['constants']) {
-         if (!$this->buildClass('constants','Constants',null,'local/constants.class.php')) { exit; }
+         if (!$this->buildClass('constants','Constants',null,'constants.class.php')) { exit; }
          $this->constants = $this->obj('constants');
       }
 
