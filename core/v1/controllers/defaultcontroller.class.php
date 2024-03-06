@@ -1,6 +1,6 @@
 <?php
 
-class DefaultController extends Base
+class DefaultController extends LWPLib\Base
 {
    public $statusCode    = 405;
    public $statusMessage = 'Method Not Defined';
@@ -13,7 +13,7 @@ class DefaultController extends Base
    /**
     * __construct
     *
-    * @param  Debug|null $debug
+    * @param  LWPLib\Debug|null $debug
     * @param  Main|null $main
     * @return void
     */

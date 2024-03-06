@@ -1,6 +1,6 @@
 <?php
 
-class Token extends Base
+class Token extends LWPLib\Base
 {
    public $now          = null;   // The current unix time
    public $value        = null;   // Value of token

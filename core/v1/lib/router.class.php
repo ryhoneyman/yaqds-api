@@ -1,6 +1,6 @@
 <?php
 
-class Router extends Base
+class Router extends LWPLib\Base
 {
    public $controllerName = null;
    public $functionName   = null;

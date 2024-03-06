@@ -4,6 +4,6 @@
 
 include_once 'mainbase.class.php';
 
-class Main extends MainBase
+class Main extends LWPLib\MainBase
 {
 }

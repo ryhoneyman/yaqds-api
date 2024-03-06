@@ -1,6 +1,6 @@
 <?php
 
-class APICore extends Base
+class APICore extends LWPLib\Base
 {
    protected $version = 1.0;
 

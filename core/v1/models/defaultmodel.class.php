@@ -1,6 +1,6 @@
 <?php
 
-class DefaultModel extends Base
+class DefaultModel extends LWPLib\Base
 {
    public    $ready         = true;
    public    $error         = null;

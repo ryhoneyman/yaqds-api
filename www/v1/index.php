@@ -5,7 +5,7 @@ include_once 'main.class.php';
 $main = new Main(array(
    'fileDefines'    => null,
    'debugLevel'     => 9,
-   'debugBuffer'    => false,
+   'debugBuffer'    => true,
    'debugLogDir'    => V1_LOGDIR,
    'errorReporting' => false,
    'sessionStart'   => false,
@@ -22,8 +22,8 @@ $main = new Main(array(
 
 $main->buildClass('apicore','ApiCore',$main->db(),'apicore.class.php');
 $main->buildClass('token','Token',null,'token.class.php');
-$main->buildClass('request','Request',null,'request.class.php');
-$main->buildClass('response','Response',null,'response.class.php');
+$main->buildClass('request','LWPLib\Request',null,'request.class.php');
+$main->buildClass('response','LWPLib\Response',null,'response.class.php');
 $main->buildClass('router','Router',null,'router.class.php');
 
 $main->prepareDatabase('db.yaqds.conf','yaqds');
@@ -123,7 +123,7 @@ $main->debug->traceDuration("request logged");
 $main->debug->traceDuration("total time",$main->startMs);
 
 // If debug is enabled, output debug information
-if ($debuglevel > 0) { print $main->debug->logOutput(); }
+if ($main->debug->level() > 0) { print $main->debug->getLog(true); }
 
 // END MAIN /-----------------------------------------------------------------------
 
@@ -254,11 +254,7 @@ function checkToken($main)
 
 function autoLoader($classname)
 {
-   global $main;
-
    $lcname = strtolower($classname);
-
-   $main->debug->trace(9,'Looking for class '.$classname);
 
    if (preg_match('/[a-z0-9]+(model|view|controller)$/i',$classname,$match)) {
       $type = strtolower($match[1]);
@@ -269,19 +265,11 @@ function autoLoader($classname)
       $file = "$lcname.class.php"; 
    }
 
-   $main->debug->trace(9,'Trying to load '.$type.' file: '.$file);
-
    if (file_exists($file)) {
       $return = (!@include_once($file)) ? false : true;
-      $main->debug->trace(9,'File found: '.$file.' [success:'.$return.']');
       return $return;
    }
-   else {
-      $main->debug->trace(9,'File not found: '.$file);
-   }
-
-   $main->debug->trace(9,'Class '.$classname.' not valid for autoload.');
-
+   
    return false;
 }
 ?>
