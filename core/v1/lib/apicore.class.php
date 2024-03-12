@@ -113,7 +113,7 @@ class APICore extends LWPLib\Base
       if (!is_array($keydata) || !$keydata['token'] || !$keydata['api_key_id'] || !preg_match('/\s*$/',$this->tokenDir)) { return false; }
 
       $findsql = "select token from api_token where api_key_id = %d";
-      $current = $this->db->query(sprintf($findsql,$keydata['api_key_id']),array('multi' => 0));
+      $current = $this->db->query(sprintf($findsql,$keydata['api_key_id']),array('single' => true));
 
       $sql = "insert into api_token (api_key_id,token,role_access,limit_rate,count_rate,expire_rate,".
                                     "limit_concurrent,count_concurrent,expire_concurrent,last_used,".
@@ -172,7 +172,7 @@ class APICore extends LWPLib\Base
 
       $sql    = "select * from api_key where client_id = '%s' and client_secret = '%s'";
       $query  = sprintf($sql,$this->db->escapeString($clientId),$this->db->escapeString($clientSecret));
-      $result = $this->db->query($query,array('multi' => 0));
+      $result = $this->db->query($query,array('single' => true));
 
       if ($result['roles']) {
          $this->debug(9,"roles detected:".$result['roles']);
@@ -240,7 +240,7 @@ class APICore extends LWPLib\Base
                        "unix_timestamp(expire_concurrent) as ut_expire_concurrent ".
                 "from api_token where apitoken = '%s'";
       $query  = sprintf($sql,$this->db->escapeString($token));
-      $result = $this->db->query($query,array('multi' => 0));
+      $result = $this->db->query($query,array('single' => true));
 
       return $result;
    }
@@ -252,7 +252,7 @@ class APICore extends LWPLib\Base
       $sql    = "select apitoken from api_token where api_key_id = %d ".
                 (($validate) ? "and expires >= now()" : '');
       $query  = sprintf($sql,$keyId);
-      $result = $this->db->query($query,array('multi' => 0));
+      $result = $this->db->query($query,array('single' => true));
 
       return $result['apitoken'];
    }
