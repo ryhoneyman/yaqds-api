@@ -9,7 +9,7 @@ class DataController extends DefaultController
    /**
     * __construct
     *
-    * @param  Debug|null $debug
+    * @param  LWPLib\Debug|null $debug
     * @param  Main|null $main
     * @return void
     */
@@ -19,8 +19,8 @@ class DataController extends DefaultController
 
       $this->debug(5,get_class($this).' class instantiated');
 
-      if (!$main->buildClass('input','Input',array('noBody' => true),'input.class.php')) { $this->notReady("Input library error"); }
-   
+      if (!$main->buildClass('input','LWPLib\Input',array('noBody' => true),'input.class.php')) { $this->notReady("Input library error"); }
+
       $this->fieldQualifiers = array(
          'startswith' => array('validFor' => array('string')),
          'contains'   => array('validFor' => array('string','json')),
@@ -38,6 +38,72 @@ class DataController extends DefaultController
          'raw'          => array('validFor' => array('json')),
          'jsondecode'   => array('validFor' => array('json')),
       );
+   }
+
+   public function bindQueryDatabase($request)
+   {
+      $this->debug(7,'method called');
+
+      $parameters = $request->parameters;
+      $filterData = $request->filterData;
+
+      $input = $this->main->obj('input');
+
+      $dbName       = $input->validate($filterData['database'],'alphanumeric,underscore,dash');
+      $statement    = $parameters['statement'];
+      $types        = $parameters['types'];
+      $data         = $parameters['data'];
+      $index        = $input->validate($parameters['index'],'alphanumeric,underscore',null);
+      $singleReturn = ($parameters['single']) ? true : false;
+
+      if (!$statement) { return $this->standardError("Invalid statement specified",500); }
+   
+      if ($types && !preg_match('/^[dfis]+$/',$types)) { return $this->standardError("Invalid types specified",500); }
+
+      if ($types && !$data) { return $this->standardError("Invalid data specified",500); }
+
+      if (!$this->connectDatabase($dbName)) { return $this->standardError("Could not connect to database $dbName"); }
+
+      $db       = $this->main->db($dbName);
+      $dbResult = $db->bindQuery($statement,$types,$data,array('index' => $index, 'single' => $singleReturn));
+
+      if ($dbResult === false) { return $this->standardError("could not query database",500); }
+
+      $returnData = array('results' => $dbResult);
+
+      return $this->standardOk(array('data' => $returnData, 'totalCount' => count($returnData['results'])));
+   }
+
+   public function bindExecuteDatabase($request)
+   {
+      $this->debug(7,'method called');
+
+      $parameters = $request->parameters;
+      $filterData = $request->filterData;
+
+      $input = $this->main->obj('input');
+
+      $dbName    = $input->validate($filterData['database'],'alphanumeric,underscore,dash');
+      $statement = $parameters['statement'];
+      $types     = $parameters['types'];
+      $data      = $parameters['data'];
+
+      if (!$statement) { return $this->standardError("Invalid statement specified",500); }
+      if (!$data)      { return $this->standardError("Invalid data specified",500); }
+
+      if (!preg_match('/^[dfis]+$/',$types)) { return $this->standardError("Invalid types specified",500); }
+
+      if (!$this->connectDatabase($dbName)) { return $this->standardError("Could not connect to database $dbName"); }
+
+      $db       = $this->main->db($dbName);
+      $dbResult = $db->bindExecute($statement,$types,$data);
+
+      if (!$dbResult) {
+         list($errno,$error) = $db->error();
+         return $this->standardError("Could not execute statement: ".(($error) ? "$errno - $error" : 'Unknown error'),500);
+      }
+
+      return $this->standardOk(array('data' => $dbResult));
    }
 
    public function queryDatabase($request)
@@ -58,19 +124,19 @@ class DataController extends DefaultController
 
       if (!preg_match('/^select/i',$queryFull)) { return $this->standardError("invalid query specified (select only)",500); }
 
-      if (!$this->main->connectDatabase(sprintf("db.%s.conf",$dbName),$dbName)) { return $this->standardError("Could not connect to database $dbName"); }
+      if (!$this->connectDatabase($dbName)) { return $this->standardError("Could not connect to database $dbName"); }
 
       $db       = $this->main->db($dbName);
-      $dbResult = $db->query($queryFull,array('keyid' => $index, 'multi' => !$singleReturn));
+      $dbResult = $db->query($queryFull,array('index' => $index, 'single' => $singleReturn));
 
       if ($dbResult === false) { return $this->standardError("could not query database",500); }
 
       $returnData = array('results' => $dbResult);
 
-      return $this->standardOk(array('data' => $returnData));
+      return $this->standardOk(array('data' => $returnData, 'totalCount' => count($returnData['results'])));
    }
 
-   public function getDataFromDatabase($request)
+   public function getStructuredTableData($request)
    {
       $this->debug(7,'method called');
 
@@ -80,7 +146,7 @@ class DataController extends DefaultController
       $input = $this->main->obj('input');
 
       $dbName     = $input->validate($filterData['database'],'alphanumeric,underscore,dash');
-      $tableName  = $input->validate($parameters['table'],'alphanumeric,underscore');
+      $tableName  = $input->validate($filterData['table'],'alphanumeric,underscore');
       $sort       = json_decode($input->validate($parameters['sort'],'all'),true);
       $pagination = json_decode($input->validate($parameters['pagination'],'all'),true);
       $filter     = json_decode($input->validate($parameters['filter'],'all'),true);
@@ -89,13 +155,11 @@ class DataController extends DefaultController
 
       if (!$tableName) { return $this->standardError("No table specified",400); }
 
-      $this->tableConfig = json_decode(file_get_contents(APP_CONFIGDIR."/tables/$dbName.tables.json"),true);
-
-      if (!$this->tableConfig) { $this->notReady('Could not process table configuration file'); }
-
+      if (!$this->loadTableConfiguration($dbName)) { $this->standardError("Table configuration data is missing for $dbName",400); };
+      
       if (!$this->tableConfig[$tableName]) { return $this->standardError("Unknown table $tableName specified",400); }
 
-      if (!$this->main->connectDatabase(sprintf("db.%s.conf",$dbName),$dbName)) { return $this->standardError("Could not connect to database $dbName"); }
+      if (!$this->connectDatabase($dbName)) { return $this->standardError("Could not connect to database $dbName"); }
 
       $db              = $this->main->db($dbName);
       $tableInfo       = $this->tableConfig[$tableName];
@@ -270,7 +334,7 @@ class DataController extends DefaultController
 
       $queryCount = $queryBaseCount.$queryCondWhere;
       $queryFull  = $queryBaseFull.$queryCondFull;
-      $queryOpts  = ($index) ? array('keyid' => $index) : array();
+      $queryOpts  = ($index) ? array('index' => $index) : array();
 
       $dbResult = $db->query($queryFull,$queryOpts);
 
@@ -321,5 +385,37 @@ class DataController extends DefaultController
    
       return array_keys($return);
    }
+   
+   /**
+    * loadTableConfiguration
+    *
+    * @param  string $dbName
+    * @return bool
+    */
+   protected function loadTableConfiguration($dbName)
+   {
+      $appConfigDir = $this->main->getDefined('APP_CONFIGDIR') ?: __DIR__;
+      $dbConfigFile = sprintf("%s/tables/%s.tables.json",$appConfigDir,$dbName);
 
+      if (!is_file($dbConfigFile)) { return false; }
+
+      $tableConfig = json_decode(file_get_contents($dbConfigFile),true);
+
+      if (!$tableConfig) { return false; }
+
+      $this->tableConfig = $tableConfig;
+
+      return true;
+   }
+   
+   /**
+    * connectDatabase
+    *
+    * @param  string $dbName
+    * @return bool
+    */
+   protected function connectDatabase($dbName)
+   {
+      return $this->main->connectDatabase(sprintf("db.%s.conf",$dbName),$dbName);
+   }
 }
