@@ -22,7 +22,7 @@ class DefaultController extends LWPLib\Base
       parent::__construct($debug);
 
       if (!$main || !$main->obj('apicore')) {
-         $this->notReady(null,null,'Cannot locate main libraries');
+         $this->notReady('Cannot locate main libraries',null,null);
       }
 
       if ($this->ready) {
@@ -31,30 +31,28 @@ class DefaultController extends LWPLib\Base
       }
    }
 
-   public function notReady($contentError = null, $code = null, $message = null)
+   public function notReady($contentError = null, $code = null, $statusMessage = null)
    {
-      $this->standardError($contentError,$code,$message);
-
       $this->ready = false;
 
-      $this->debug(5,sprintf("Controller signalling not ready: code(%s) status(%s) error(%s)",$this->statusCode,$this->statusMessage,$this->content['error']));
+      $this->debug(5,sprintf("Controller signalling not ready: code(%s) status(%s) error(%s)",$code,$statusMessage,$contentError));
 
-      return true;
+      return $this->standardError($contentError,$code,$statusMessage);
    }
 
-   public function standardError($contentError = null, $code = null, $message = null)
+   public function standardError($contentError = null, $code = null, $statusMessage = null)
    {
       $this->statusCode    = $code ?: 500; 
-      $this->statusMessage = $message ?: 'Server Error';
+      $this->statusMessage = $statusMessage ?: 'Server Error';
       $this->content       = array('error' => $contentError ?: 'An error occurred');
 
       return true;
    }
 
-   public function standardOk($content = null, $code = null, $message = null)
+   public function standardOk($content = null, $code = null, $statusMessage = null)
    {
       $this->statusCode    = $code ?: 200; 
-      $this->statusMessage = $message ?: 'OK';
+      $this->statusMessage = $statusMessage ?: 'OK';
       $this->content       = $content;
 
       return true;
