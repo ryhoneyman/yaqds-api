@@ -4,7 +4,7 @@ include_once 'main.class.php';
 
 $main = new Main(array(
    'fileDefines'    => null,
-   'debugLevel'     => 9,
+   'debugLevel'     => 0,
    'debugBuffer'    => true,
    'debugLogDir'    => V1_LOGDIR,
    'errorReporting' => false,
