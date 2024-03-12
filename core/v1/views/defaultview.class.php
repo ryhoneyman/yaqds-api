@@ -1,6 +1,6 @@
 <?php
 
-class DefaultView extends Base {
+class DefaultView extends LWPLib\Base {
    
    public $contentType = null;
    public $contentBody = '';
