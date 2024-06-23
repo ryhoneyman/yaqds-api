@@ -18,7 +18,7 @@ class Router extends LWPLib\Base
    {
       $this->loadEndpoints($request->basePath);
 
-      $this->debug(9,"Loaded ".count($this->endpoints)." endpoints from base ".$request->basePath." ".json_encode(array_keys($this->endpoints),JSON_UNESCAPED_SLASHES));
+      $this->debug(9,"Loaded ".count($this->endpoints)." endpoints from base ".$request->basePath);
 
       if (empty($this->endpoints) || !$request->path || !$request->method) { return false; }
 
@@ -38,8 +38,6 @@ class Router extends LWPLib\Base
       foreach (array('nofilter','filter') as $matchType) {
          foreach ($matchList[$matchType] as $path => $pathInfo) {
             $matchPath = $this->parsePath($path,$pathInfo['filter']);  // process the path replacing filters with regex patterns
-
-            $this->debug(9,"Match path: $matchPath");
 
             if ($matchPath === false) { continue; }  // parsing the path failed
 
