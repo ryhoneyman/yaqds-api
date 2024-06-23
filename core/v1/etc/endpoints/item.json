@@ -14,7 +14,7 @@
          }
       }
    },
-   "/spell/{id}": {
+   "/item/{id}": {
       "GET": {
          "name": "Get Item Info By Id",
          "description": "",
@@ -22,21 +22,7 @@
          "function": "getItemById",
          "category": "Item",
          "filter": {
-            "id": { "required": true, "constraint": "integer", "description": "Id for gathering spell information." }
-         },
-         "param": {
-         }
-      }
-   },
-   "/spell/{id}/effect": {
-      "GET": {
-         "name": "Get Spell Effect Info By Id",
-         "description": "",
-         "controller": "SpellController",
-         "function": "getSpellEffectById",
-         "category": "Spell",
-         "filter": {
-            "id": { "required": true, "constraint": "integer", "description": "Id for gathering spell information." }
+            "id": { "required": true, "constraint": "integer", "description": "Id for gathering item information." }
          },
          "param": {
          }
