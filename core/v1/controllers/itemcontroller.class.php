@@ -2,7 +2,6 @@
 
 class ItemController extends DefaultController
 {
-   protected $dataModel = null;
    protected $itemModel = null;
    
    /**
