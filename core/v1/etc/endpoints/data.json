@@ -1,5 +1,5 @@
 {
-   "/data/provider/query/{database}/{table}": {
+   "/data/provider/table/{database}/{table}": {
       "POST": {
          "name": "Get Data From Database",
          "description": "",
