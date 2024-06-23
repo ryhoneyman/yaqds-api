@@ -55,8 +55,20 @@ class SpellController extends DefaultController
 
       $spellData = $this->spellModel->getSpellById($spellId);
 
-      $content = is_array($spellData) ? array_change_key_case($spellData) : $spellData;
+      return $this->standardOk($spellData);
+   }
 
-      return $this->standardOk($content);
+   public function getSpellEffectById($request)
+   {
+      $this->debug(7,'method called');
+
+      $parameters = $request->parameters;
+      $filterData = $request->filterData;
+
+      $spellId = $filterData['id'];
+
+      $spellData = $this->spellModel->getSpellEffectById($spellId);
+
+      return $this->standardOk($spellData);
    }
 }

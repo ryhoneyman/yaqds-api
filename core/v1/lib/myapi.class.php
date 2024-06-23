@@ -23,7 +23,7 @@ class MyAPI extends LWPLib\APIBase
          'v1-authenticate'              => '/v1/auth/token',
          'v1-data-provider-query'       => '/v1/data/provider/query/{{database}}',
          'v1-data-provider-query-table' => '/v1/data/provider/query/{{database}}/{{table}}',
-         'v1-data-provider-modify'      => '/data/provider/modify/{{database}}',
+         'v1-data-provider-modify'      => '/v1/data/provider/modify/{{database}}',
       ));
    }
    

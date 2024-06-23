@@ -49,7 +49,7 @@ class APICore extends LWPLib\Base
          // Full wildcard controllers get priority in the list, followed by wildcard methods
          $priority = ($anyController) ? 1 : (($anyFunction) ? 2 : 3);
 
-         $rbacList[$priority]["$privController:$privFunction:$privMethod"]++; 
+         $rbacList[$priority]["$privController:$privFunction:$privMethod"] = true; 
       }
 
       ksort($rbacList);
@@ -95,7 +95,7 @@ class APICore extends LWPLib\Base
       $needles = array();
    
       if (!$haystack[$needle]) { return ""; }
-      else if (!$haystack[$needle][$groupkey]) { return array($needle); }
+      else if (!isset($haystack[$needle][$groupkey])) { return array($needle); }
       else {
          foreach ($haystack[$needle][$groupkey] as $newneedle) {
             $result = $this->resolveGroupDependencies($newneedle,$haystack,$groupkey);
@@ -355,7 +355,7 @@ class APICore extends LWPLib\Base
       $sql = "insert into api_log (accessed,apitoken,api_key_id,request,method,statuscode,statusmesg,elapsedsec,bytes) ".
              "values (now(),'%s',%d,'%s','%s',%d,'%s',%1.5f,%d)\n";
  
-      $insert = sprintf($sql,$request->token,$request->keyId,$request->pathinfo,$request->method,$response->statusCode,$response->statusMessage,$elapsedtime,$response->contentLength);
+      $insert = sprintf($sql,$request->token,$request->keyId,$request->pathInfo,$request->method,$response->statusCode,$response->statusMessage,$elapsedtime,$response->contentLength);
 
       $result = file_put_contents($this->logDir.'/api.request.log',$insert,FILE_APPEND|LOCK_EX);
 

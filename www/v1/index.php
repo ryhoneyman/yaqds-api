@@ -4,7 +4,7 @@ include_once 'main.class.php';
 
 $main = new Main(array(
    'fileDefines'    => null,
-   'debugLevel'     => 0,
+   'debugLevel'     => 9,
    'debugBuffer'    => true,
    'debugLogDir'    => V1_LOGDIR,
    'errorReporting' => false,
@@ -117,7 +117,7 @@ if ($rateLimit && $token->valid) {
 }
 
 // Log user request and response to database
-$apicore->logApiRequestFile($request,$response,$elapsedtime);
+$apicore->logApiRequestFile($request,$response,$main->elapsedRuntime());
 $main->debug->traceDuration("request logged"); 
 
 $main->debug->traceDuration("total time",$main->startMs);
@@ -258,7 +258,7 @@ function autoLoader($classname)
 
    if (preg_match('/[a-z0-9]+(model|view|controller)$/i',$classname,$match)) {
       $type = strtolower($match[1]);
-      $file .= V1_BASEDIR."/{$type}s/$lcname.class.php";  
+      $file = V1_BASEDIR."/{$type}s/$lcname.class.php";  
    }
    else { 
       $type = 'global';

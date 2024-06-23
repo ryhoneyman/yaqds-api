@@ -1,6 +1,6 @@
 <?php
 
-class DefaultController extends LWPLib\Base
+abstract class DefaultController extends LWPLib\Base
 {
    public $statusCode    = 405;
    public $statusMessage = 'Method Not Defined';
@@ -35,7 +35,7 @@ class DefaultController extends LWPLib\Base
    {
       $this->ready = false;
 
-      $this->debug(5,sprintf("Controller signalling not ready: code(%s) status(%s) error(%s)",$code,$statusMessage,$contentError));
+      $this->debug(5,sprintf("Controller signaling not ready: code(%s) status(%s) error(%s)",$code,$statusMessage,$contentError));
 
       return $this->standardError($contentError,$code,$statusMessage);
    }

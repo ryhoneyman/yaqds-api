@@ -34,6 +34,39 @@ class SpellModel extends DefaultModel
 
       $result = $this->api->v1DataProviderBindQuery($database,$statement,$types,$data,array('single' => true));
 
+      if (is_array($result['data']['results'])) { $result['data']['results'] = array_change_key_case($result['data']['results']); }
+
+      return $result;
+   }
+
+   public function getSpellEffectById($spellId)
+   {
+      $spellInfo    = $this->getSpellById($spellId);
+      $spellResults = $spellInfo['data']['results'];
+
+      if (!$spellResults) { return null; }
+
+      $result = array();
+
+      $keyMap = array(
+         'effectid'           => 'id',
+         'effect_base_value'  => 'base',
+         'effect_limit_value' => 'limit',
+         'max'                => 'max',
+         'formula'            => 'formula'
+      );
+
+      foreach ($spellResults as $spellKey => $spellValue) {
+         if (preg_match('/^(effectid|effect_base_value|effect_limit_value|max|formula)(\d+)$/i',$spellKey,$match)) {
+            $spellEffectKey = strtolower($match[1]);
+            $spellEffectPos = $match[2];
+
+            if ($spellResults['effectid'.$spellEffectPos] == 254) { continue; }
+
+            $result['raw'][$spellEffectPos][$keyMap[$spellEffectKey] ?: $spellEffectKey] = $spellValue; 
+         }
+      }
+
       return $result;
    }
 }

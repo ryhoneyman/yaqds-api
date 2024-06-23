@@ -1,11 +1,11 @@
 {
-   "/spell": {
+   "/item": {
       "GET": {
-         "name": "Get All Spells",
+         "name": "Get All Items",
          "description": "",
-         "controller": "SpellController",
-         "function": "getSpellList",
-         "category": "Spell",
+         "controller": "ItemController",
+         "function": "getItemList",
+         "category": "Item",
          "filter": {},
          "param": {
             "id":   { "required": false, "constraint": "integer", "description": "List data by id.", "default": null },
@@ -16,11 +16,11 @@
    },
    "/spell/{id}": {
       "GET": {
-         "name": "Get Spell Info By Id",
+         "name": "Get Item Info By Id",
          "description": "",
-         "controller": "SpellController",
-         "function": "getSpellById",
-         "category": "Spell",
+         "controller": "ItemController",
+         "function": "getItemById",
+         "category": "Item",
          "filter": {
             "id": { "required": true, "constraint": "integer", "description": "Id for gathering spell information." }
          },

@@ -40,7 +40,7 @@ class DataController extends DefaultController
       );
    }
 
-   public function bindQueryDatabase($request)
+   public function bindQueryDatabase(LWPLib\Request $request): bool
    {
       $this->debug(7,'method called');
 
@@ -49,12 +49,16 @@ class DataController extends DefaultController
 
       $input = $this->main->obj('input');
 
-      $dbName       = $input->validate($filterData['database'],'alphanumeric,underscore,dash');
-      $statement    = $parameters['statement'];
-      $types        = $parameters['types'];
-      $data         = $parameters['data'];
-      $index        = $input->validate($parameters['index'],'alphanumeric,underscore',null);
-      $singleReturn = ($parameters['single']) ? true : false;
+      $database  = isset($filterData['database'])  ? $filterData['database'] : null;
+      $statement = isset($parameters['statement']) ? $parameters['statement'] : null;
+      $types     = isset($parameters['types'])     ? $parameters['types'] : null;
+      $data      = isset($parameters['data'])      ? $parameters['data'] : null;
+      $index     = isset($parameters['index'])     ? $parameters['index'] : null;
+      $single    = isset($parameters['single'])    ? $parameters['single'] : null;
+
+      $dbName       = $input->validate($database,'alphanumeric,underscore,dash');
+      $useIndex     = $input->validate($index,'alphanumeric,underscore',null);
+      $singleReturn = ($single) ? true : false;
 
       if (!$statement) { return $this->standardError("Invalid statement specified",500); }
    
@@ -65,7 +69,7 @@ class DataController extends DefaultController
       if (!$this->connectDatabase($dbName)) { return $this->standardError("Could not connect to database $dbName"); }
 
       $db       = $this->main->db($dbName);
-      $dbResult = $db->bindQuery($statement,$types,$data,array('index' => $index, 'single' => $singleReturn));
+      $dbResult = $db->bindQuery($statement,$types,$data,array('index' => $useIndex, 'single' => $singleReturn));
 
       if ($dbResult === false) { return $this->standardError("could not query database",500); }
 
@@ -416,6 +420,8 @@ class DataController extends DefaultController
     */
    protected function connectDatabase($dbName)
    {
-      return $this->main->connectDatabase(sprintf("db.%s.conf",$dbName),$dbName);
+      $dbConfigFile = ($dbName) ? sprintf("db.%s.conf",$dbName) : null;
+
+      return $this->main->connectDatabase($dbConfigFile,$dbName);
    }
 }
