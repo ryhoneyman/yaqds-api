@@ -18,7 +18,7 @@ class Router extends LWPLib\Base
    {
       $this->loadEndpoints($request->basePath);
 
-      $this->debug(9,"Loaded ".count($this->endpoints)." endpoints from base ".$request->basePath);
+      $this->debug(9,"Loaded ".count($this->endpoints)." endpoints from base ".$request->basePath." ".json_encode(array_keys($this->endpoints),JSON_UNESCAPED_SLASHES));
 
       if (empty($this->endpoints) || !$request->path || !$request->method) { return false; }
 
