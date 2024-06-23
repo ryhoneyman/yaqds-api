@@ -10,7 +10,7 @@ abstract class DefaultModel extends LWPLib\Base
    public    ?APICore        $apicore       = null;
    public    ?DataController $data          = null;
    protected bool            $needsDatabase = false;
-   protected                 $dbName        = null;
+   protected mixed           $dbName        = null;
 
    public function __construct(?LWPLib\Debug $debug = null, ?Main $main = null)
    {
@@ -34,7 +34,7 @@ abstract class DefaultModel extends LWPLib\Base
       }
    }
 
-   public function dataRequest(string $database, string $statement, ?string $types = null, ?array $data = null)
+   public function dataRequest(string $database, string $statement, ?string $types = null, ?array $data = null): mixed 
    {
       $this->debug(7,'method called');
 
