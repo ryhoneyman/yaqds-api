@@ -34,7 +34,7 @@ abstract class DefaultModel extends LWPLib\Base
       }
    }
 
-   public function dataRequest(string $database, string $statement, ?string $types = null, ?array $data = null): mixed 
+   public function dataRequest(string $database, string $statement, ?string $types = null, ?array $data = null)
    {
       $this->debug(7,'method called');
 
