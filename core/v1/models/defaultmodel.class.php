@@ -10,7 +10,7 @@ abstract class DefaultModel extends LWPLib\Base
    public    ?APICore        $apicore       = null;
    public    ?DataController $data          = null;
    protected bool            $needsDatabase = false;
-   protected mixed           $dbName        = null;
+   protected                 $dbName        = null;
 
    public function __construct(?LWPLib\Debug $debug = null, ?Main $main = null)
    {
