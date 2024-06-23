@@ -2,7 +2,6 @@
 
 class SpellController extends DefaultController
 {
-   protected $apiModel   = null;
    protected $spellModel = null;
    
    /**
@@ -16,10 +15,6 @@ class SpellController extends DefaultController
    {
       parent::__construct($debug,$main);
       $this->debug(5,get_class($this).' class instantiated');
-
-      $this->apiModel = new ApiModel($debug,$main);
-
-      if (!$this->apiModel->ready) { $this->notReady($this->apiModel->error); return; }
 
       // The model provides all the data and methods to retrieve it; connect it and bring it online
       $this->spellModel = new SpellModel($debug,$main); 
