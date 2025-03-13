@@ -54,11 +54,8 @@ class ItemController extends DefaultController
       if ($itemData === false) { return $this->standardError($this->itemModel->error); }
       if (!$itemData)          { return $this->standardError("Item does not exist"); }
 
-      $return = [
-         'data'        => $itemData,
-         'description' => $this->itemModel->createItemDescription($itemData),
-      ];
+      $itemData['_description'] = $this->itemModel->createItemDescription($itemData);
 
-      return $this->standardOk($return);
+      return $this->standardOk($itemData);
    }
 }

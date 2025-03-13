@@ -262,11 +262,11 @@ class ItemModel extends DefaultModel
       
       $values['EFFECT'] = ($values['effect'] && $spellName) ? sprintf("Effect: %s:",$spellName) : ''; 
 
-      $return = ['id' => $itemId, 'name' => $itemName, 'description' => []];
+      $return = [];
 
       foreach ($format as $line) {
          $lineValue = trim(preg_replace('/\s+/',' ',$this->main->replaceValues($line,$values)));
-         if ($lineValue) { $return['description'][] = $lineValue; }
+         if ($lineValue) { $return[] = $lineValue; }
       }
    
       return $return;
