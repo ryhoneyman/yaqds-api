@@ -2,7 +2,6 @@
 include_once 'yaqds-api-init.php';
 include_once 'main.class.php';
 
-
 $main = new Main(array(
    'fileDefines'    => null,
    'debugLevel'     => 9,
@@ -60,7 +59,9 @@ if ($request->token) {
    $token->mapData($apicore->getTokenData($request->token));
    $main->debug->traceDuration("token mapped"); 
 
-   if ($rateLimit && $token->valid) {
+   if ($token->superUser) { $main->debug->trace(9,"Super user token provided"); }
+
+   if ($rateLimit && !$token->superUser && $token->valid) {
       // Borrow a use unit from the pool for our token
       $result = $apicore->addTokenCounter($token);
       $main->debug->traceDuration("token counter adjusted up"); 
@@ -71,17 +72,19 @@ if ($request->token) {
 //$debug->trace(0,json_encode($token));
 
 // Check if this token is currently exceeds its limits
-if (!$rateLimit || !$token->limitExceeds) {
+if (!$rateLimit || $token->superUser || !$token->limitExceeds) {
    // Match the request path with known endpoints and determine if it exists
    if (!$router->processRequestPath($request)) { 
       $response->setStatus(404,'Resource Not Found');
    }
    else {
       // Check user token to see if we are authorized to use the API call
-      $allowed = checkToken($main);
-      $main->debug->traceDuration("token checked"); 
+      if (!$token->superUser) {
+         $allowed = checkToken($main);
+         $main->debug->traceDuration("token checked"); 
+      }
 
-      if ($allowed) {
+      if ($token->superUser || $allowed) {
          // Execute the API call, a false return indicates a non-user error
          // At the moment the return isn't used, but it could be in the future
          $result = apiMain($main);
@@ -94,7 +97,7 @@ else {
 }
 
 // Add rate limit headers if limiting is on
-if ($rateLimit && $token->rateLimit) {
+if ($rateLimit && !$token->superUser && $token->rateLimit) {
    $rateRemaining = ($token->rateLimit > $token->rateCount) ? $token->rateLimit - $token->rateCount : 0;
    $response->addCustomHeader('X-RateLimit-Limit: '.$token->rateLimit);
    $response->addCustomHeader('X-RateLimit-Remaining: '.$rateRemaining);
@@ -112,7 +115,7 @@ $response->sendBody();
 $main->debug->traceDuration("body sent"); 
 
 // Return our use unit to the pool for our token
-if ($rateLimit && $token->valid) {
+if ($rateLimit && !$token->superUser && $token->valid) {
    $result = $apicore->removeTokenCounter($token);
    $main->debug->traceDuration("token counter adjusted down"); 
 }
@@ -124,7 +127,11 @@ $main->debug->traceDuration("request logged");
 $main->debug->traceDuration("total time",$main->startMs);
 
 // If debug is enabled, output debug information
-if ($main->debug->level() > 0) { print $main->debug->getLog(true); }
+if ($main->debug->level() > 0) {
+   $logData = $main->debug->getLog(true);
+   if (!$token->superUser) { print $logData; } 
+   //@file_put_contents(V1_LOGDIR.'/debug.log',$logData);
+}
 
 // END MAIN /-----------------------------------------------------------------------
 

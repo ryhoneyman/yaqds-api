@@ -5,16 +5,9 @@
  */
 class SpellModel extends DefaultModel
 {   
-   /**
-    * @var MyAPI|null $api
-    */
-   protected $api = null;
-
    public function __construct($debug = null, $main = null)
    {
       parent::__construct($debug,$main);
-
-      if (!$this->api = $main->obj('api')) { $this->notReady('API not available'); return; }
    }
 
    public function getAll()
@@ -22,7 +15,11 @@ class SpellModel extends DefaultModel
       $database  = 'yaqds';
       $statement = "SELECT id, name FROM spells_new";
 
-      return $this->api->v1DataProviderBindQuery($database,$statement);
+      $result = $this->api->v1DataProviderBindQuery($database,$statement);
+
+      if ($result === false) { $this->error = $this->api->error(); return false; }
+
+      return (isset($result['data']['results'])) ? $result['data']['results'] : null;
    }
 
    public function getSpellById($spellId)
@@ -36,7 +33,7 @@ class SpellModel extends DefaultModel
 
       if (is_array($result['data']['results'])) { $result['data']['results'] = array_change_key_case($result['data']['results']); }
 
-      return $result;
+      return (isset($result['data']['results'])) ? $result['data']['results'] : null;
    }
 
    public function getSpellEffectById($spellId)

@@ -6,7 +6,7 @@ abstract class DefaultController extends LWPLib\Base
    public $statusMessage = 'Method Not Defined';
    public $headers       = array();
    public $content       = array();
-   public $main          = null;
+   public ?Main $main    = null;
    public $apicore       = null;
    public $ready         = true;
    

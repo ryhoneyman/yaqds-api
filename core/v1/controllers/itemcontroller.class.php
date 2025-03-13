@@ -2,7 +2,7 @@
 
 class ItemController extends DefaultController
 {
-   protected $itemModel = null;
+   protected $itemModel  = null;
    
    /**
     * __construct
@@ -18,10 +18,10 @@ class ItemController extends DefaultController
       $this->debug(5,get_class($this).' class instantiated');
 
       // The model provides all the data and methods to retrieve it; connect it and bring it online
-      $this->itemModel = new ItemModel($debug,$main); 
+      $this->itemModel  = new ItemModel($debug,$main); 
 
       // If the model isn't ready we need to flag the controller as not ready and set status
-      if (!$this->itemModel->ready) { $this->notReady($this->itemModel->error); return; }
+      if (!$this->itemModel->ready)  { $this->notReady($this->itemModel->error); return; }
    }
 
    public function getItemList($request)
@@ -51,20 +51,14 @@ class ItemController extends DefaultController
 
       $itemData = $this->itemModel->getItemById($itemId);
 
-      return $this->standardOk($itemData);
-   }
+      if ($itemData === false) { return $this->standardError($this->itemModel->error); }
+      if (!$itemData)          { return $this->standardError("Item does not exist"); }
 
-   public function getItemEffectById($request)
-   {
-      $this->debug(7,'method called');
+      $return = [
+         'data'        => $itemData,
+         'description' => $this->itemModel->createItemDescription($itemData),
+      ];
 
-      $parameters = $request->parameters;
-      $filterData = $request->filterData;
-
-      $itemId = $filterData['id'];
-
-      $itemData = $this->itemModel->getItemEffectById($itemId);
-
-      return $this->standardOk($itemData);
+      return $this->standardOk($return);
    }
 }

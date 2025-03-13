@@ -135,7 +135,7 @@ class APICore extends LWPLib\Base
       $dbrc = $this->db->execute($insert);
 
       if (!$dbrc) { 
-         $this->debug(9,"could insert into database: $insert"); 
+         $this->debug(9,"could not insert into database: $insert"); 
          return false; 
       }
 
@@ -199,7 +199,7 @@ class APICore extends LWPLib\Base
 
       $apiTokenDir = $this->tokenDir.'/'.$token;
 
-      $this->debug(7,"check dir: $apiTokenDir");
+      $this->debug(7,"checking token directory");
 
       // If token is blank or the token directory doesn't exist, there's nothing to read
       if (preg_match('/^\s*$/',$token) || !is_dir($apiTokenDir)) { return array(); }
@@ -438,7 +438,7 @@ class APICore extends LWPLib\Base
 
    public function isAuthRequest($routerCategory)
    {
-      return (preg_match('/^authentication$/i',$routerCategory)) ? true : false;
+      return ($routerCategory && preg_match('/^authentication$/i',$routerCategory)) ? true : false;
    }
 
 }

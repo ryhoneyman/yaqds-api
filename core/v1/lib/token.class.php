@@ -12,6 +12,7 @@ class Token extends LWPLib\Base
    public $roleAccess   = null;   // JSON of access controls allowed for this token
    public $accessList   = null;   // Array of access controls allowed for this token
    public $limitExceeds = null;   // If true, token has met or exceeded a limit
+   public $superUser    = null;   // If true, token is elevated to highest privilege (reserved for our own API calls)
 
    public $rateLimit    = null;   // Rate request limit
    public $rateCount    = null;   // Rate request count
@@ -49,6 +50,7 @@ class Token extends LWPLib\Base
       $this->valid      = ($this->exists && !$this->expired) ? true : false;
       $this->roleAccess = $data['role_access'];
       $this->accessList = @json_decode($this->roleAccess,true);
+      $this->superUser  = ($this->keyId == 1) ? true : false;
 
       $this->rateLimit   = $data['limit_rate'];
       $this->rateCount   = $data['count_rate'];
