@@ -243,12 +243,12 @@ class ItemModel extends DefaultModel
       $values['sizeName']  = $this->decodeItemSize($itemData['size'] ?: 0);
       $values['weightVal'] = $this->decodeItemWeight($itemData['weight'] ?: 0);
 
-      $values['PROPERTIES'] = implode(', ',$values['propertyList']); 
-      $values['SLOTS']      = ($values['slotList']) ? 'Slot: '.implode(', ',$values['slotList']) : '';
+      $values['PROPERTIES'] = implode(' ',$values['propertyList']); 
+      $values['SLOTS']      = ($values['slotList']) ? 'Slot: '.implode(' ',$values['slotList']) : '';
       $values['TYPE']       = $this->decodeItemType($itemData['itemtype']);
       $values['DAMAGE']     = ($itemData['damage'] && $itemData['delay']) ? sprintf("%d/%d",$itemData['damage'],$itemData['delay']) : '';
-      $values['CLASSES']    = 'Class: '.(($values['classList']) ? implode(', ',$values['classList']) : 'NONE');
-      $values['RACES']      = 'Race: '.(($values['raceList']) ? implode(', ',$values['raceList']) : 'NONE');   
+      $values['CLASSES']    = 'Class: '.(($values['classList']) ? implode(' ',$values['classList']) : 'NONE');
+      $values['RACES']      = 'Race: '.(($values['raceList']) ? implode(' ',$values['raceList']) : 'NONE');   
       $values['WEIGHT']     = 'WT: '.$values['weightVal'];
       $values['SIZE']       = 'Size: '.$values['sizeName'];
       
