@@ -260,7 +260,7 @@ class ItemModel extends DefaultModel
          $spellName = $spellInfo['name'];
       }
       
-      $values['EFFECT'] = ($values['effect'] && $spellName) ? sprintf("Effect: %s:",$spellName) : ''; 
+      $values['EFFECT'] = ($values['effect'] && $spellName) ? sprintf("Effect: %s",$spellName) : ''; 
 
       $return = [];
 
