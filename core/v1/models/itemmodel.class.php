@@ -235,6 +235,7 @@ class ItemModel extends DefaultModel
          "{{SKILL}} {{DELAY}}",
          "{{DAMAGE}} {{AC}}",
          "{{STR}} {{DEX}} {{STA}} {{CHA}} {{WIS}} {{INT}} {{AGI}} {{HP}} {{MANA}}",
+         "{{HP OVERFLOW}} {{MANA OVERFLOW}}",
          "{{SV MAGIC}} {{SV FIRE}} {{SV COLD}} {{SV DISEASE}} {{SV POISON}}",
          "{{EFFECT}}",
          "{{WEIGHT}} {{SIZE}}",
@@ -271,9 +272,26 @@ class ItemModel extends DefaultModel
       if ($itemData['nodrop'] == 0) { $values['propertyList'][] = 'NO DROP'; }
       if ($itemData['norent'] == 0) { $values['propertyList'][] = 'NORENT'; }
 
+      $values['attribCount'] = 0;
+      
+      foreach (['aagi','acha','adex','aint','asta','astr','awis'] as $attrib) {
+         if ($itemData[$attrib] > 0) { $values['attribCount']++; }
+      }
+   
       foreach ($statList as $dbKey => $formatKey) {
          $statValue = $itemData[$dbKey];
          $values[$formatKey] = ($statValue != 0) ? sprintf("%s: %s%s",$formatKey,(($statValue > 0) ? (($dbKey == 'ac') ? '' : '+') : '-'),$statValue) : ''; 
+      }
+
+      if ($values['attribCount'] >= 6) {
+         $values['HP OVERFLOW']   = $values['HP'];
+         $values['MANA OVERFLOW'] = $values['MANA'];
+         $values['HP'] = '';
+         $values['MANA'] = '';
+      }
+      else {
+         $values['HP OVERFLOW']   = '';
+         $values['MANA OVERFLOW'] = '';
       }
 
       $values['effect']      = null;
@@ -297,11 +315,11 @@ class ItemModel extends DefaultModel
       // No valid items currently have worn + proc + click effect on PQ, so we search the list in this order and never use more than one for display
       if ($itemData['worneffect']) {
          $values['effect']      = $itemData['worneffect'];
-         $values['effectLabel'] = '';
+         $values['effectLabel'] = '(Worn)';
       }
       else if ($itemData['proceffect']) {
          $values['effect']      = $itemData['proceffect'];
-         $values['effectLabel'] = '(Combat)';
+         $values['effectLabel'] = ($itemData['worntype'] == 2) ? '(Worn)' : '(Combat)';
       }
       else if ($itemData['clickeffect']) {
          $values['effect'] = $itemData['clickeffect'];
