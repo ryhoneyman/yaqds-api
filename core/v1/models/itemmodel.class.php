@@ -155,15 +155,48 @@ class ItemModel extends DefaultModel
       return array_unique($return);
    }
 
-   public function decodeItemType($typeId) 
+   public function decodeItemEffectType($effectTypeId) 
    {
-      $typeList = [
-         '0' => '1H Slashing',
-         '1' => '2H Slashing',
-         '2' => 'Piercing',
+      $effectTypeList = [
+         0 => 'CombatProc',
+         1 => 'Click',
+         2 => 'Worn',
+         3 => 'Expendable',
+         4 => 'EquipClick',
+         5 => 'Click2',
+         6 => 'Focus',
+         7 => 'Scroll',
+         8 => 'Count',
       ];
 
-      return $typeList[$typeId] ?: null;
+      return $effectTypeList[$effectTypeId] ?: null;
+   }
+
+   public function decodeItemType($typeId, $useSkill = false) 
+   {
+      $typeList = [
+         0  => ['1H Slashing','1H Slashing'],
+         1  => ['2H Slashing','2H Slashing'],
+         2  => ['Piercing','Piercing'],
+         3  => ['1H Blunt','1H Blunt'],
+         4  => ['2H Blunt','2H Blunt'],
+         5  => ['Bow','Archery'],
+         7  => ['Large Throwing','Throwing'],
+         18 => ['Small Throwing','Throwing'],
+         45 => ['Martial','Hand to Hand']
+      ];
+
+      $element = ($useSkill) ? 1 : 0;
+
+      return $typeList[$typeId][$element] ?: null;
+   }
+
+   public function decodeWeaponSkill($typeId) 
+   {
+      // We only look at weapon skills
+      if (!in_array($typeId,[1,2,3,4,5,7,18,34,45])) { return null; }
+
+      return $this->decodeItemType($typeId,true);
    }
 
    public function decodeItemSize($sizeVal = 0) 
@@ -185,6 +218,11 @@ class ItemModel extends DefaultModel
       return sprintf("%1.1f",$weightVal / 10);
    }
 
+   public function decodeCastTime($castTime = 0) 
+   {
+      return sprintf("%1.1f",$castTime / 1000);
+   }
+
    public function createItemDescription($itemData)
    {
       $return = [];
@@ -193,12 +231,13 @@ class ItemModel extends DefaultModel
       
       $format = [
          "{{PROPERTIES}}",
-         "{{SLOTS}} {{TYPE}} {{DAMAGE}}",
-         "{{AC}}",
-         "{{STR}} {{STA}} {{DEX}} {{AGI}} {{WIS}} {{INT}} {{CHA}} {{HP}} {{MANA}}",
-         "{{MR}} {{FR}} {{CR}} {{DR}} {{PR}}",
-         "{{WEIGHT}} {{SIZE}}",
+         "{{SLOTS}}",
+         "{{SKILL}} {{DELAY}}",
+         "{{DAMAGE}} {{AC}}",
+         "{{STR}} {{DEX}} {{STA}} {{CHA}} {{WIS}} {{INT}} {{AGI}} {{HP}} {{MANA}}",
+         "{{SV MAGIC}} {{SV FIRE}} {{SV COLD}} {{SV DISEASE}} {{SV POISON}}",
          "{{EFFECT}}",
+         "{{WEIGHT}} {{SIZE}}",
          "{{CLASSES}}",
          "{{RACES}}",
       ];
@@ -214,11 +253,11 @@ class ItemModel extends DefaultModel
          'hp'   => 'HP',
          'mana' => 'MANA',
          'ac'   => 'AC',
-         'mr'   => 'MR',
-         'fr'   => 'FR',
-         'cr'   => 'CR',
-         'dr'   => 'DR',
-         'pr'   => 'PR',
+         'mr'   => 'SV MAGIC',
+         'fr'   => 'SV FIRE',
+         'cr'   => 'SV COLD',
+         'dr'   => 'SV DISEASE',
+         'pr'   => 'SV POISON',
       ];
 
       $values = [];
@@ -228,7 +267,7 @@ class ItemModel extends DefaultModel
 
       if ($itemData['magic'] == 1) { $values['propertyList'][] = 'MAGIC ITEM'; }
       if (preg_match('/^(?:.)?\#/',$itemData['lore'])) { $values['propertyList'][] = 'ARTIFACT'; } 
-      if (preg_match('/^(?:.)?\*/',$itemData['lore'])) { $values['propertyList'][] = 'LORE'; } 
+      if (preg_match('/^(?:.)?\*/',$itemData['lore'])) { $values['propertyList'][] = 'LORE ITEM'; } 
       if ($itemData['nodrop'] == 0) { $values['propertyList'][] = 'NO DROP'; }
       if ($itemData['norent'] == 0) { $values['propertyList'][] = 'NORENT'; }
 
@@ -237,30 +276,50 @@ class ItemModel extends DefaultModel
          $values[$formatKey] = ($statValue != 0) ? sprintf("%s: %s%s",$formatKey,(($statValue > 0) ? (($dbKey == 'ac') ? '' : '+') : '-'),$statValue) : ''; 
       }
 
-      $values['slotList']  = $this->decodeItemSlots($itemData['slots'],true);
-      $values['classList'] = $this->decodeItemClasses($itemData['classes']);
-      $values['raceList']  = $this->decodeItemRaces($itemData['races']);
-      $values['sizeName']  = $this->decodeItemSize($itemData['size'] ?: 0);
-      $values['weightVal'] = $this->decodeItemWeight($itemData['weight'] ?: 0);
+      $values['effect']      = null;
+      $values['slotList']    = $this->decodeItemSlots($itemData['slots'],true);
+      $values['classList']   = $this->decodeItemClasses($itemData['classes']);
+      $values['raceList']    = $this->decodeItemRaces($itemData['races']);
+      $values['sizeName']    = $this->decodeItemSize($itemData['size'] ?: 0);
+      $values['weightVal']   = $this->decodeItemWeight($itemData['weight'] ?: 0);
+      $values['weaponSkill'] = $this->decodeWeaponSkill($itemData['itemtype']);
 
       $values['PROPERTIES'] = implode(' ',$values['propertyList']); 
       $values['SLOTS']      = ($values['slotList']) ? 'Slot: '.implode(' ',$values['slotList']) : '';
-      $values['TYPE']       = $this->decodeItemType($itemData['itemtype']);
-      $values['DAMAGE']     = ($itemData['damage'] && $itemData['delay']) ? sprintf("%d/%d",$itemData['damage'],$itemData['delay']) : '';
+      $values['SKILL']      = ($values['weaponSkill']) ? sprintf("Skill: %s",$values['weaponSkill']) : '';
+      $values['DAMAGE']     = ($itemData['damage']) ? sprintf("DMG: %d",$itemData['damage']) : '';
+      $values['DELAY']     = ($itemData['delay']) ? sprintf("Atk Delay: %d",$itemData['delay']) : '';
       $values['CLASSES']    = 'Class: '.(($values['classList']) ? implode(' ',$values['classList']) : 'NONE');
       $values['RACES']      = 'Race: '.(($values['raceList']) ? implode(' ',$values['raceList']) : 'NONE');   
       $values['WEIGHT']     = 'WT: '.$values['weightVal'];
       $values['SIZE']       = 'Size: '.$values['sizeName'];
       
-      // No valid items currently have worn + click effect, so we can use whichever one we find, and not check for both
-      $values['effect'] = $itemData['worneffect'] ?: $itemData['clickeffect'] ?: null;
+      // No valid items currently have worn + proc + click effect on PQ, so we search the list in this order and never use more than one for display
+      if ($itemData['worneffect']) {
+         $values['effect']      = $itemData['worneffect'];
+         $values['effectLabel'] = '';
+      }
+      else if ($itemData['proceffect']) {
+         $values['effect']      = $itemData['proceffect'];
+         $values['effectLabel'] = '(Combat)';
+      }
+      else if ($itemData['clickeffect']) {
+         $values['effect'] = $itemData['clickeffect'];
+
+         $effectType = $this->decodeItemEffectType($itemData['clicktype']);
+         $castTime   = $this->decodeCastTime($itemData['casttime']);
+
+         if (preg_match('/^equipclick$/i',$effectType)) { 
+            $values['effectLabel'] = sprintf("(Must Equip. Casting Time: %s)",($castTime > 0) ? $castTime : 'Instant');
+         }
+      }
 
       if ($values['effect']) {
          $spellInfo = $this->spellModel->getSpellById($values['effect']);
          $spellName = $spellInfo['name'];
       }
-      
-      $values['EFFECT'] = ($values['effect'] && $spellName) ? sprintf("Effect: %s",$spellName) : ''; 
+
+      $values['EFFECT'] = ($values['effect'] && $spellName) ? sprintf("Effect: %s %s",$spellName,$values['effectLabel']) : ''; 
 
       $return = [];
 
