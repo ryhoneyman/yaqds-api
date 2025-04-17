@@ -71,7 +71,7 @@ class DataController extends DefaultController
       $db       = $this->main->db($dbName);
       $dbResult = $db->bindQuery($statement,$types,$data,array('index' => $useIndex, 'single' => $singleReturn));
 
-      var_dump($dbResult,$statement,$types,$data,$useIndex,$singleReturn);
+      $this->main->debug->writeFile('datacontroller.debug.log',json_encode([$dbResult,$statement,$types,$data,$useIndex,$singleReturn]));
 
       if ($dbResult === false) { return $this->standardError("could not query database",500); }
 
