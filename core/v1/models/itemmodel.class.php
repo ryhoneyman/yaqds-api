@@ -63,8 +63,6 @@ class ItemModel extends DefaultModel
 
       $result = $this->api->v1DataProviderBindQuery($database,$statement,'i',[$itemId],array('single' => true));
 
-      var_dump($database,$statement,$itemId,$result);
-
       if ($result === false) { $this->error = $this->api->error(); return false; }
 
       if (is_array($result['data']['results'])) { $result['data']['results'] = array_change_key_case($result['data']['results']); }
