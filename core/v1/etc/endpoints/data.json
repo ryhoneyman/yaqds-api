@@ -41,7 +41,7 @@
             "database": { "required": true, "constraint": "string", "description": "Name of database." }
          },
          "param": {
-            "statement": { "required": true, "constraint": "string", "description": "Database query", "default": null },
+            "statement": { "required": true, "constraint": "string", "description": "Database query" },
             "types":     { "required": false, "constraint": "string", "description": "Types of query values", "default": null },
             "data":      { "required": false, "constraint": "array", "description": "Array of query values", "default": null },
             "index":     { "required": false, "constraint": "string", "description": "Index column for data return", "default": null },
