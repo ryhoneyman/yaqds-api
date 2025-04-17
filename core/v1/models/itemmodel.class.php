@@ -36,9 +36,11 @@ class ItemModel extends DefaultModel
     *
     * @return mixed
     */
-   public function searchByName($name, $like = false, $limit = 50): mixed
+   public function searchByName($name, $like = false, $limit = null): mixed
    {
       if (empty($name)) { return null; }
+
+      if (is_null($limit)) { $limit = 50; }
 
       $database  = 'yaqds';
       $statement = "SELECT id, name FROM items where name ".(($like) ? "like ?" : " = ?")." LIMIT $limit";
