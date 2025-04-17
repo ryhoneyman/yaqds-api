@@ -23,7 +23,8 @@
          "category": "Item",
          "filter": {},
          "param": {
-            "name": { "required": false, "constraint": "string", "description": "List data starting with this string.", "default": null },
+            "name": { "required": true, "constraint": "string", "description": "List data starting with this string." },
+            "like": { "required": false, "constraint": "boolean", "description": "Use like searching", "default": false },
             "max":  { "required": false, "constraint": "integer", "description": "Limit maximum number of data returned.", "default": null }
          }
       }
