@@ -14,6 +14,20 @@
          }
       }
    },
+   "/item/search": {
+      "POST": {
+         "name": "Search All Items",
+         "description": "",
+         "controller": "ItemController",
+         "function": "searchItems",
+         "category": "Item",
+         "filter": {},
+         "param": {
+            "name": { "required": false, "constraint": "string", "description": "List data starting with this string.", "default": null },
+            "max":  { "required": false, "constraint": "integer", "description": "Limit maximum number of data returned.", "default": null }
+         }
+      }
+   },
    "/item/{id}": {
       "GET": {
          "name": "Get Item Info By Id",

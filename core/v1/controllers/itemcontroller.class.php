@@ -58,4 +58,22 @@ class ItemController extends DefaultController
 
       return $this->standardOk($itemData);
    }
+
+   public function searchItems($request)
+   {
+      $this->debug(7,'method called');
+
+      $parameters = $request->parameters;
+      $filterData = $request->filterData;
+
+      $searchNameLike = $parameters['name:like'];
+      $searchName     = $parameters['name'];
+
+      $itemData = $this->itemModel->searchByName($searchName ?: $searchNameLike,$searchNameLike ? true : false);
+
+      if ($itemData === false) { return $this->standardError($this->itemModel->error); }
+      if (!$itemData)          { return $this->standardNotFound("No matches"); }
+
+      return $this->standardOk($itemData);
+   }
 }

@@ -30,6 +30,25 @@ class ItemModel extends DefaultModel
 
       return (isset($result['data']['results'])) ? $result['data']['results'] : null;
    }
+
+   /**
+    * getAll
+    *
+    * @return mixed
+    */
+   public function searchByName($name, $like = false, $limit = 50): mixed
+   {
+      if (empty($name)) { return null; }
+
+      $database  = 'yaqds';
+      $statement = "SELECT id, name FROM items where name ".(($like) ? "like ?" : " = ?")." LIMIT $limit";
+ 
+      $result = $this->api->v1DataProviderBindQuery($database,$statement,'s',($like) ? ["%$name%"] : ["$name"]);
+ 
+      if ($result === false) { $this->error = $this->api->error(); return false; }
+ 
+      return (isset($result['data']['results'])) ? $result['data']['results'] : null;
+   }
    
    /**
     * getItemById
@@ -236,7 +255,7 @@ class ItemModel extends DefaultModel
          "{{DAMAGE}} {{AC}}",
          "{{STR}} {{DEX}} {{STA}} {{CHA}} {{WIS}} {{INT}} {{AGI}} {{HP}} {{MANA}}",
          "{{HP OVERFLOW}} {{MANA OVERFLOW}}",
-         "{{SV MAGIC}} {{SV FIRE}} {{SV COLD}} {{SV DISEASE}} {{SV POISON}}",
+         "{{SV FIRE}} {{SV DISEASE}} {{SV COLD}} {{SV MAGIC}} {{SV POISON}}",
          "{{EFFECT}}",
          "{{WEIGHT}} {{SIZE}}",
          "{{CLASSES}}",
