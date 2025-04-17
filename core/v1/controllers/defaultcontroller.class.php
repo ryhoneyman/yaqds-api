@@ -40,11 +40,20 @@ abstract class DefaultController extends LWPLib\Base
       return $this->standardError($contentError,$code,$statusMessage);
    }
 
+   public function standardNotFound($content = null, $code = null, $statusMessage = null)
+   {
+      $this->statusCode    = $code ?: 404; 
+      $this->statusMessage = $statusMessage ?: 'Not Found';
+      $this->content       = $content ?: ['error' => 'Not Found'];
+
+      return true;
+   }
+
    public function standardError($contentError = null, $code = null, $statusMessage = null)
    {
       $this->statusCode    = $code ?: 500; 
       $this->statusMessage = $statusMessage ?: 'Server Error';
-      $this->content       = array('error' => $contentError ?: 'An error occurred');
+      $this->content       = ['error' => $contentError ?: 'An error occurred'];
 
       return true;
    }
