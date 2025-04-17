@@ -66,10 +66,11 @@ class ItemController extends DefaultController
       $parameters = $request->parameters;
       $filterData = $request->filterData;
 
-      $searchNameLike = $parameters['name:like'];
-      $searchName     = $parameters['name'];
+      $searchName = $parameters['name'];
+      $searchLike = $parameters['like'];
+      $searchMax  = $parameters['max'];
 
-      $itemData = $this->itemModel->searchByName($searchName ?: $searchNameLike,$searchNameLike ? true : false);
+      $itemData = $this->itemModel->searchByName($searchName,$searchLike,$searchMax);
 
       if ($itemData === false) { return $this->standardError($this->itemModel->error); }
       if (!$itemData)          { return $this->standardNotFound("No matches"); }
