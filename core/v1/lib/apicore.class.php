@@ -352,12 +352,11 @@ class APICore extends LWPLib\Base
    {
       $this->debug(7,'method called');
 
-      $sql = "insert into api_log (accessed,apitoken,api_key_id,request,method,statuscode,statusmesg,elapsedsec,bytes) ".
-             "values (now(),'%s',%d,'%s','%s',%d,'%s',%1.5f,%d)\n";
- 
-      $insert = sprintf($sql,$request->token,$request->keyId,$request->pathInfo,$request->method,$response->statusCode,$response->statusMessage,$elapsedtime,$response->contentLength);
+      $format = "%s,%d,'%s','%s',%d,'%s',%1.5f,%d)\n";
+      $entry  = sprintf($format,gmdate('Y-m-d H:i:s'),$request->keyId,$request->pathInfo,$request->method,$response->statusCode,
+                                $response->statusMessage,$elapsedtime,$response->contentLength);
 
-      $result = file_put_contents($this->logDir.'/api.request.log',$insert,FILE_APPEND|LOCK_EX);
+      $result = file_put_contents($this->logDir.'/api.request.log',$entry,FILE_APPEND|LOCK_EX);
 
       return (($result !== false) ? true : false);
    }
@@ -366,10 +365,10 @@ class APICore extends LWPLib\Base
    {
       $this->debug(7,'method called');
 
-      $sql = "insert into api_log (accessed,apitoken,api_key_id,request,method,statuscode,statusmesg,elapsedsec,bytes) ".
-             "values (now(),'%s',%d,'%s','%s',%d,'%s',%1.5f,%d)";
+      $sql = "insert into api_log (accessed,api_key_id,request,method,status_code,status_mesg,elapsed_sec,bytes) ".
+             "values (now(),%d,'%s','%s',%d,'%s',%1.5f,%d)";
 
-      $insert = sprintf($sql,$this->db->escapeString($request->token),$request->keyId,
+      $insert = sprintf($sql,$request->keyId,
                              $this->db->escapeString($request->pathinfo),$this->db->escapeString($request->method),
                              $response->statusCode,$this->db->escapeString($response->statusMessage),
                              $elapsedtime,$response->contentLength);
