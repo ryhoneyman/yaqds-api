@@ -130,7 +130,7 @@ $main->debug->traceDuration("total time",$main->startMs);
 if ($main->debug->level() > 0) {
    $logData = $main->debug->getLog(true);
    if (!$token->superUser) { print $logData; } 
-   //@file_put_contents(V1_LOGDIR.'/debug.log',$logData);
+   $main->debug->writeFile('api.debug.log',$logData);
 }
 
 // END MAIN /-----------------------------------------------------------------------
