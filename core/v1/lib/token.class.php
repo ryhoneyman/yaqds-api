@@ -44,7 +44,7 @@ class Token extends LWPLib\Base
 
       $this->value      = $data['token'];
       $this->keyId      = $data['api_key_id'];
-      $this->expires    = ($data['ut_expires']) ? $data['ut_expires'] : 0;
+      $this->expires    = $data['ut_expires'] ?: 0;
       $this->exists     = ($this->value && $this->keyId) ? true : false;
       $this->expired    = ($this->expires <= $this->now) ? true : false;
       $this->valid      = ($this->exists && !$this->expired) ? true : false;
@@ -54,13 +54,13 @@ class Token extends LWPLib\Base
 
       $this->rateLimit   = $data['limit_rate'];
       $this->rateCount   = $data['count_rate'];
-      $this->rateExpires = ($data['ut_expire_rate']) ? $data['ut_expire_rate'] : 0;
+      $this->rateExpires = $data['ut_expire_rate'] ?: 0;
       $this->rateExceeds = ($this->rateCount && ($this->rateCount >= $this->rateLimit)) ? true : false;
       $this->rateReset   = ($this->rateExpires < $this->now) ? true : false;
 
-      $this->concurrentLimit   = $data['limit_concurrent'];
-      $this->concurrentCount   = $data['count_concurrent'];
-      $this->concurrentExpires = ($data['ut_expire_concurrent']) ? $data['ut_expire_concurrent'] : 0;
+      $this->concurrentLimit   = $data['limit_concurrent'] ?: 1;
+      $this->concurrentCount   = $data['count_concurrent'] ?: 0;
+      $this->concurrentExpires = $data['ut_expire_concurrent'] ?: 0;
       $this->concurrentExceeds = ($this->concurrentCount && ($this->concurrentCount >= $this->concurrentLimit)) ? true : false;
       $this->concurrentReset   = ($this->concurrentExpires < $this->now) ? true : false;
 
