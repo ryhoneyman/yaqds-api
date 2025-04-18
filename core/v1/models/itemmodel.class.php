@@ -63,12 +63,12 @@ class ItemModel extends DefaultModel
       $database  = 'yaqds';
       $statement = "SELECT * FROM items where id = ?";
 
-      $result = $this->api->v1DataProviderBindQuery($database,$statement,'i',[$itemId],array('single' => true));
+      $result = $this->api->v1DataProviderBindQuery($database,$statement,'i',[$itemId],['single' => true]);
 
       $this->main->debug->writeFile('itemmodel.getitembyid.debug.log',json_encode([
          'statement' => $statement,
          'result'    => $result,
-      ]));
+      ]),false);
 
       if ($result === false) { $this->error = $this->api->error(); return false; }
 
