@@ -98,6 +98,7 @@ else {
 
 // Add rate limit headers if limiting is on
 if ($rateLimit && !$token->superUser && $token->rateLimit) {
+   $main->debug->trace(9,"Rate limit headers set");
    $rateRemaining = ($token->rateLimit > $token->rateCount) ? $token->rateLimit - $token->rateCount : 0;
    $response->addCustomHeader('X-RateLimit-Limit: '.$token->rateLimit);
    $response->addCustomHeader('X-RateLimit-Remaining: '.$rateRemaining);
@@ -111,6 +112,9 @@ $response->setProtocol($request->protocol);
 // Output response to client
 $response->sendHeader($token);
 $main->debug->traceDuration("header sent"); 
+
+$main->debug->trace(9,"Response: ".json_encode($response,JSON_UNESCAPED_SLASHES));
+
 $response->sendBody();
 $main->debug->traceDuration("body sent"); 
 
@@ -198,6 +202,7 @@ function apiMain($main)
 
    // View doesn't exist
    if (!class_exists($viewName)) {
+      $main->debug->trace(9,"View not found");
       $response->setStatus(501,'View Not Implemented');
       return false;
    }
@@ -206,6 +211,7 @@ function apiMain($main)
 
    // View could not be initialized
    if (!$view) {
+      $main->debug->trace(9,"View could not be initialized");
       $response->setStatus(501,'View Error');
       return false;
    }
@@ -215,6 +221,7 @@ function apiMain($main)
 
    // Something went wrong in the view render
    if (!$vResult) {
+      $main->debug->trace(9,"View render error");
       $response->setStatus(500,'View Render Error');
       return false;
    }
@@ -224,7 +231,10 @@ function apiMain($main)
 
    // Controller initialized, but marked itself not ready.  
    // We wait until here because we need the headers/content (which may contain error messages) to render
-   if (!$controller->ready) { return false; }
+   if (!$controller->ready) { 
+      $main->debug->trace(9,"Controller not ready");
+      return false; 
+   }
 
    return true;
 }
