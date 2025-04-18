@@ -358,7 +358,7 @@ class ItemModel extends DefaultModel
          }
       }
 
-      if ($values['effect']) {
+      if ($values['effect'] > 0) {
          $spellInfo = $this->spellModel->getSpellById($values['effect']);
          $spellName = $spellInfo['name'];
       }
