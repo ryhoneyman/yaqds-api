@@ -333,13 +333,13 @@ class ItemModel extends DefaultModel
       $values['weightVal']   = $this->decodeItemWeight($itemData['weight'] ?: 0);
       $values['weaponSkill'] = $this->decodeWeaponSkill($itemData['itemtype']);
 
-      $values['PROPERTIES'] = implode(' ',$values['propertyList']); 
-      $values['SLOTS']      = ($values['slotList']) ? 'Slot: '.implode(' ',$values['slotList']) : '';
+      $values['PROPERTIES'] = implode(' ',$values['propertyList'] ?? []); 
+      $values['SLOTS']      = ($values['slotList']) ? 'Slot: '.implode(' ',$values['slotList'] ?? []) : '';
       $values['SKILL']      = ($values['weaponSkill']) ? sprintf("Skill: %s",$values['weaponSkill']) : '';
       $values['DAMAGE']     = ($itemData['damage']) ? sprintf("DMG: %d",$itemData['damage']) : '';
       $values['DELAY']     = ($itemData['delay']) ? sprintf("Atk Delay: %d",$itemData['delay']) : '';
-      $values['CLASSES']    = 'Class: '.(($values['classList']) ? implode(' ',$values['classList']) : 'NONE');
-      $values['RACES']      = 'Race: '.(($values['raceList']) ? implode(' ',$values['raceList']) : 'NONE');   
+      $values['CLASSES']    = 'Class: '.(($values['classList']) ? implode(' ',$values['classList'] ?? []) : 'NONE');
+      $values['RACES']      = 'Race: '.(($values['raceList']) ? implode(' ',$values['raceList'] ?? []) : 'NONE');   
       $values['WEIGHT']     = 'WT: '.$values['weightVal'];
       $values['SIZE']       = 'Size: '.$values['sizeName'];
       
