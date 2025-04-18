@@ -158,6 +158,7 @@ function apiMain($main)
 
    // Controller could not be initialized
    if (!$controller) {
+      $main->debug->trace(9,"Controller could not be initialized");
       $response->setStatus(500,'Controller Error');
       return false;
    }
@@ -166,6 +167,7 @@ function apiMain($main)
    if ($controller->ready) { 
       // Check to see if the class method (endpoint function) exists in the controller class
       if (!method_exists($controller,$functionName)) {
+         $main->debug->trace(9,"Controller function not found");
          $response->setStatus(405,'Function Not Implemented');
          return false;
       }
@@ -175,10 +177,13 @@ function apiMain($main)
 
       // Something went wrong in the controller method
       if (!$cfResult) {
+         $main->debug->trace(9,"Controller function error");
          $response->setStatus(500,'Controller Function Error');
          return false;
       }
    }
+
+   $main->debug->trace(9,sprintf("Status: %s, StatusMessage: %s",$controller->statusCode,$controller->statusMessage));
 
    // set initial status from controller
    $response->setStatus($controller->statusCode,$controller->statusMessage);
