@@ -59,7 +59,6 @@ DROP TABLE IF EXISTS `api_log`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `api_log` (
   `accessed` datetime NOT NULL,
-  `api_token` varchar(64) NOT NULL,
   `api_key_id` int unsigned NOT NULL,
   `request` varchar(255) NOT NULL,
   `method` varchar(15) DEFAULT NULL,
