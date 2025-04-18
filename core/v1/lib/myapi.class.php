@@ -88,8 +88,6 @@ class MyAPI extends LWPLib\APIBase
         return false; 
       }
 
-      $this->debug->writeFile('v1DataProviderBindQuery.debug.log',json_encode($this->clientResponse()));
-
       return $this->clientResponse();
    }
    
