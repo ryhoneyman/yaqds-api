@@ -352,7 +352,7 @@ class APICore extends LWPLib\Base
    {
       $this->debug(7,'method called');
 
-      $format = "%s,%d,'%s','%s',%d,'%s',%1.5f,%d)\n";
+      $format = "('%s',%d,'%s','%s',%d,'%s',%1.5f,%d)\n";
       $entry  = sprintf($format,gmdate('Y-m-d H:i:s'),$request->keyId,$request->pathInfo,$request->method,$response->statusCode,
                                 $response->statusMessage,$elapsedtime,$response->contentLength);
 
