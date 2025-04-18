@@ -51,6 +51,8 @@ class ItemController extends DefaultController
 
       $itemData = $this->itemModel->getItemById($itemId);
 
+      $this->main->debug->writeFile('itemcontroller.getitembyid.debug.log',json_encode([$itemId,$itemData]));
+
       if ($itemData === false) { return $this->standardError($this->itemModel->error); }
       if (!$itemData)          { return $this->standardError("Item does not exist"); }
 
