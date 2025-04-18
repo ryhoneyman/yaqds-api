@@ -72,9 +72,13 @@ class ItemModel extends DefaultModel
 
       if ($result === false) { $this->error = $this->api->error(); return false; }
 
-      if (is_array($result['data']['results'])) { $result['data']['results'] = array_change_key_case($result['data']['results']); }
+      if (!isset($result['data']['results'])) { return null; }
+
+      $return = $result['data']['results'];
+
+      if (is_array($return)) { $return = array_change_key_case($return); }
       
-      return (isset($result['data']['results'])) ? $result['data']['results'] : null;
+      return $return;
    }
 
    public function decodeItemClasses($classesBits)
