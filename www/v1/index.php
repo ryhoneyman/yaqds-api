@@ -2,12 +2,12 @@
 include_once 'yaqds-api-init.php';
 include_once 'main.class.php';
 
-$main = new Main(array(
+$main = new Main([
    'fileDefines'    => null,
    'debugLevel'     => 9,
    'debugBuffer'    => true,
    'debugLogDir'    => V1_LOGDIR,
-   'errorReporting' => false,
+   'errorReporting' => true,
    'sessionStart'   => false,
    'memoryLimit'    => null,
    'sendHeaders'    => false,
@@ -18,7 +18,7 @@ $main = new Main(array(
    'input'          => false,
    'html'           => false,
    'adminlte'       => false,
-));
+]);
 
 $main->buildClass('apicore','ApiCore',$main->db(),'apicore.class.php');
 $main->buildClass('token','Token',null,'token.class.php');
