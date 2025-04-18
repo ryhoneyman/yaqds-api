@@ -67,6 +67,7 @@ class ItemModel extends DefaultModel
 
       $this->main->debug->writeFile('itemmodel.getitembyid.debug.log',json_encode([
          'statement' => $statement,
+         'itemId'    => $itemId,
          'result'    => $result,
       ]),false);
 
