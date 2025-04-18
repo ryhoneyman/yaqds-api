@@ -130,10 +130,9 @@ $main->debug->traceDuration("request logged");
 
 $main->debug->traceDuration("total time",$main->startMs);
 
-// If debug is enabled, output debug information
+// If debug is enabled, write debug information
 if ($main->debug->level() > 0) {
    $logData = $main->debug->getLog(true);
-   if (!$token->superUser) { print $logData; } 
    $main->debug->writeFile('api.debug.log',$logData);
 }
 
