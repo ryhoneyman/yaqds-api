@@ -58,6 +58,8 @@ class ItemController extends DefaultController
 
       $itemData['_description'] = $this->itemModel->createItemDescription($itemData);
 
+      $this->main->debug->writeFile('itemcontroller.getitembyid.debug.log',json_encode(["OK!",$itemData]));
+
       return $this->standardOk($itemData);
    }
 
