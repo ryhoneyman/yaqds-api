@@ -93,6 +93,14 @@ class AuthController extends DefaultController
          return true;
       }
 
+      // We don't allow the keyId of 1 to be reset because it's our internal superuser
+      if ($request->keyId == 1) {
+         $this->statusCode       = 403;
+         $this->statusMessage    = 'Forbidden';
+         $this->content['error'] = 'Request Not Allowed';
+         return true;
+      }
+
       $request->token = $this->apicore->generateToken($request->keyId);
       $keydata        = $this->apicore->updateKeyDataToken($keydata,$request->token);  // place the new token back into the keydata object
 
