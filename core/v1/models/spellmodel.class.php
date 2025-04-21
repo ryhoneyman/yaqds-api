@@ -109,7 +109,7 @@ class SpellModel extends DefaultModel
          "{{AE RANGE}}",
          "{{CLASSES}}",
          "_EMPTY_",
-         "{{EFFECT}}",
+         "_EFFECT_",
          "_EMPTY_",
          "{{CAST ON YOU}}",
          "{{CAST ON OTHER}}",
@@ -199,9 +199,9 @@ class SpellModel extends DefaultModel
          $effectValues[$effectPos] = $effectInfo;
       }
    
-      $values['EFFECT'] = [];
+      $effectDisplayList = [];
       foreach ($effectValues as $effectPos => $effectInfo) { 
-         $values['EFFECT'][$effectPos] = $this->createFormattedSpellEffectText($spellData,$effectInfo);
+         $effectDisplayList[$effectPos] = sprintf(" - %s",$this->createFormattedSpellEffectText($spellData,$effectInfo));
       }
    
       $values['MANA COST'] = $manaCost ? sprintf("Mana Cost: %s",$manaCost) : '';
@@ -221,9 +221,16 @@ class SpellModel extends DefaultModel
       $return = [];
 
       foreach ($format as $line) {
-         $lineValue = trim(preg_replace('/\s+/',' ',$this->main->replaceValues($line,$values)));
-         $lineValue = str_replace('_EMPTY_',' ',$lineValue);
-         if ($lineValue) { $return[] = $lineValue; }
+         if ($line == '_EMPTY_') { 
+            $return[] = ''; 
+         }
+         else if ($line == '_EFFECT_') { 
+            foreach ($effectDisplayList as $effectLine) {$return[] = $effectLine; }
+         }    
+         else {
+            $lineValue = trim(preg_replace('/[\ \t]+/',' ',$this->main->replaceValues($line,$values,"\n")));
+            if ($lineValue) { $return[] = $lineValue; }
+         }  
       }
    
       return $return;
@@ -425,7 +432,7 @@ class SpellModel extends DefaultModel
          default: $effectFormat .= ($textFormat) ? $textFormat : "{{effect:label}}";
       }
       
-      $effectFormat = $this->main->replaceValues($effectFormat,$values) ?: null;
+      $effectFormat = $this->main->replaceValues($effectFormat,$values) ?: sprintf("Missing: %s/%s",$effectId,$effectName);
 
       return $effectFormat;
    }
