@@ -14,6 +14,7 @@ $main = new Main([
    'autoLoad'       => 'autoLoader',  // we define our own autoLoader function to distinguish between MVC components when loading
    'database'       => 'prepare',     // we set prepare only because we don't want the database connected for unauthed/improper requests
    'dbConfigDir'    => APP_CONFIGDIR,
+   'fileDefine'     => APP_CONFIGDIR.'/defines.json',
    'dbDefines'      => null,
    'input'          => false,
    'html'           => false,
