@@ -3,10 +3,10 @@
 class Spell extends LWPLib\Base
 {
    protected $version   = 1.0;
-   protected $data      = array();
-   protected $id        = null;
-   protected $valid     = false;
-   protected $classes   = array();
+   public    $data      = [];
+   public    $id        = null;
+   public    $valid     = false;
+   public    $classes   = [];
 
    //===================================================================================================
    // Description: Creates the class object
@@ -286,10 +286,9 @@ class Spell extends LWPLib\Base
       $this->id    = $spellData['id'];
 
       for ($class = 1; $class <= CLASS_MAX_COUNT; $class++) {
-         $classLevel = $this->data['class'.$class];
+         $classLevel = $this->data['classes'.$class];
 
          if ($classLevel < SPELL_LEVEL_CANNOT_USE) { $this->classes[$class] = $classLevel; }
       }
-      
    }
 }

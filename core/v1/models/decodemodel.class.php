@@ -322,9 +322,9 @@ class DecodeModel extends DefaultModel
 
       if (!isset($spellData['classes1'])) { return $classList; }
 
-      for ($classId = 1; $classId <= 15; $classId++) {
+      for ($classId = 1; $classId <= CLASS_MAX_COUNT; $classId++) {
          $classLevel = $spellData['classes'.$classId];
-         if ($classLevel < 255) { $classList[$this->decodeClass($classId)] = $classLevel; }
+         if ($classLevel < SPELL_LEVEL_CANNOT_USE) { $classList[$this->decodeClass($classId,true)] = $classLevel; }
       }
 
       return $classList;
@@ -1088,27 +1088,29 @@ class DecodeModel extends DefaultModel
       return $raceList[$raceId] ?: null;
    }
 
-   public function decodeClass($classId)
+   public function decodeClass($classId, $short = false)
    {
       $classList = [
-         '1' => 'Warrior',
-         '2' => 'Cleric',
-         '3' => 'Paladin',
-         '4' => 'Ranger',
-         '5' => 'Shadowknight',
-         '6' => 'Druid',
-         '7' => 'Monk',
-         '8' => 'Bard',
-         '9' => 'Rogue',
-         '10' => 'Shaman',
-         '11' => 'Necromancer',
-         '12' => 'Wizard',
-         '13' => 'Magician',
-         '14' => 'Enchanter',
-         '15' => 'Beastlord', 
+         '1' => ['Warrior','WAR'],
+         '2' => ['Cleric','CLR'],
+         '3' => ['Paladin','PAL'],
+         '4' => ['Ranger','RNG'],
+         '5' => ['Shadowknight','SHD'],
+         '6' => ['Druid','DRU'],
+         '7' => ['Monk','MNK'],
+         '8' => ['Bard','BRD'],
+         '9' => ['Rogue','ROG'],
+         '10' => ['Shaman','SHM'],
+         '11' => ['Necromancer','NEC'],
+         '12' => ['Wizard','WIZ'],
+         '13' => ['Magician','MAG'],
+         '14' => ['Enchanter','ENC'],
+         '15' => ['Beastlord','BST'], 
       ];
+
+      $return = ($short) ? $classList[$classId][1] : $classList[$classId][0];
    
-      return $classList[$classId] ?: null;
+      return $return ?: null;
    }
 
    public function decodeDeity($deityId)

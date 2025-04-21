@@ -152,6 +152,12 @@ function apiMain($main)
    $controllerName = $router->controllerName;
    $functionName   = $router->functionName;
 
+   // Protect data returns from error debugging output
+   if ($controllerName == 'DataController') { 
+      $main->debugLevel(0);
+      $main->enableErrorReporting(false); 
+   }
+
    // Controller doesn't exist
    if (!class_exists($controllerName)) {
       $response->setStatus(501,'Controller Not Implemented');

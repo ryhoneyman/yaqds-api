@@ -88,6 +88,17 @@ class MyAPI extends LWPLib\APIBase
         return false; 
       }
 
+      /*
+      $this->debug->writeFile('debug.myapi.v1dataproviderbindquery.log',json_encode([
+         'database'  => $database,
+         'statement' => $statement,
+         'types'     => $types,
+         'data'      => $data,
+         'options'   => $options,
+         'return'    => $this->clientResponse(),
+      ]),false);
+      */
+
       return $this->clientResponse();
    }
    
