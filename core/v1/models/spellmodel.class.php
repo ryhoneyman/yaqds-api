@@ -428,6 +428,14 @@ class SpellModel extends DefaultModel
 
             break;
          }
+         case 12: {
+            $newEffect      = $values['effect:base'] ? $this->decodeModel->decodeSpellEffect($values['effect:base']): null;
+            $newEffectLabel = (!is_null($newEffect)) ? $newEffect['display']['label'] : '';
+            $newSlot        = $values['effect:formula'] ? $values['effect:formula'] - 201 + 1 : 0;
+            $effectFormat   = sprintf("{{effect:label}} if Slot %s is '%s' and < {{effect:max}}",$newSlot,$newEffectLabel);
+
+            break;
+         }
          // Custom format or generic label only
          default: $effectFormat .= ($textFormat) ? $textFormat : "{{effect:label}}";
       }

@@ -857,11 +857,11 @@ class DecodeModel extends DefaultModel
          ],
          '148' => [
             'name' => 'SE_StackingCommandBlock',
-            'text' => 'foo'
+            'display' => ['format' => 12, 'label' => 'Block New Spell'],
          ],
          '149' => [
             'name' => 'SE_StackingCommandOverwrite',
-            'text' => 'foo'
+            'display' => ['format' => 12, 'label' => 'Overwrite Existing Spell'],
          ],
          '150' => [
             'name' => 'SE_DeathSave',
