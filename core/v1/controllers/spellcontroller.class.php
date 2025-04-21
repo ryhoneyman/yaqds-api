@@ -39,6 +39,29 @@ class SpellController extends DefaultController
       return $this->standardOk($content);
    }
 
+   public function getItemById($request)
+   {
+      $this->debug(7,'method called');
+
+      $parameters = $request->parameters;
+      $filterData = $request->filterData;
+
+      $itemId = $filterData['id'];
+
+      $itemData = $this->itemModel->getItemById($itemId);
+
+      $this->main->debug->writeFile('itemcontroller.getitembyid.debug.log',json_encode([$itemId,$itemData]),false);
+
+      if ($itemData === false) { return $this->standardError($this->itemModel->error); }
+      if (!$itemData)          { return $this->standardError("Item does not exist"); }
+
+      $itemData['_description'] = $this->itemModel->createItemDescription($itemData);
+
+      $this->main->debug->writeFile('itemcontroller.getitembyid.debug.log',json_encode(["OK!",$itemData]),false);
+
+      return $this->standardOk($itemData);
+   }
+
    public function getSpellById($request)
    {
       $this->debug(7,'method called');
@@ -49,6 +72,11 @@ class SpellController extends DefaultController
       $spellId = $filterData['id'];
 
       $spellData = $this->spellModel->getSpellById($spellId);
+
+      if ($spellData === false) { return $this->standardError($this->spellModel->error); }
+      if (!$spellData)          { return $this->standardError("Item does not exist"); }
+
+      $spellData['_description'] = $this->spellModel->createSpellDescription($spellData);
 
       return $this->standardOk($spellData);
    }
