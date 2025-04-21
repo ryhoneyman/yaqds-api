@@ -5,13 +5,15 @@
  */
 class ItemModel extends DefaultModel
 {   
-   protected $spellModel = null;
+   protected $decodeModel = null;
+   protected $spellModel  = null;
 
    public function __construct($debug = null, $main = null)
    {
       parent::__construct($debug,$main);
 
-      $this->spellModel = new SpellModel($debug,$main);
+      $this->decodeModel = new DecodeModel($debug,$main);
+      $this->spellModel  = new SpellModel($debug,$main);
    }
    
    /**
@@ -82,177 +84,7 @@ class ItemModel extends DefaultModel
       return $return;
    }
 
-   public function decodeItemClasses($classesBits)
-   {
-      $return = [];
 
-      if      ($classesBits == 0)     { $return[] = 'NONE'; }
-      else if ($classesBits == 32767) { $return[] = 'ALL';  }
-      else {
-         $classesList = [
-            'WAR' => 1,
-            'CLR' => 2,
-            'PAL' => 4,
-            'RNG' => 8,
-            'SHD' => 16,
-            'DRU' => 32,
-            'MNK' => 64,
-            'BRD' => 128,
-            'ROG' => 256,
-            'SHM' => 512,
-            'NEC' => 1024,
-            'WIZ' => 2048,
-            'MAG' => 4096,
-            'ENC' => 8192,
-            'BST' => 16384,
-         ];
-
-         foreach ($classesList as $classAbbr => $classMask) {
-            if ($classesBits & $classMask) { $return[] = $classAbbr; }
-         } 
-      }
-
-      return $return;
-   }
-
-   public function decodeItemRaces($racesBits)
-   {
-      $return = [];
-
-      if      ($racesBits == 0)     { $return[] = 'NONE'; }
-      else if ($racesBits >= 16383) { $return[] = 'ALL';  }
-      else {
-         $racesList = [
-            'HUM' => 1,
-            'BAR' => 2,
-            'ERU' => 4,
-            'ELF' => 8,
-            'HIE' => 16,
-            'DEF' => 32,
-            'HEF' => 64,
-            'DWF' => 128,
-            'TRL' => 256,
-            'OGR' => 512,
-            'HFL' => 1024,
-            'GNM' => 2048,
-            'IKS' => 4096,
-            'VAH' => 8192,
-            //'FRG' => 16384,
-            //'DRK' => 32768,
-         ];
-
-         foreach ($racesList as $raceAbbr => $raceMask) {
-            if ($racesBits & $raceMask) { $return[] = $raceAbbr; }
-         } 
-      }
-
-      return $return;
-   }
-
-   public function decodeItemSlots($slotBits, $collapseSlots = false)
-   {
-      $return = [];
-
-      $slotList = [
-         'CHARM'       => 1,
-         'EAR-L'       => 2,
-         'HEAD'        => 4,
-         'FACE'        => 8,
-         'EAR-R'       => 16,
-         'NECK'        => 32,
-         'SHOULDER'    => 64,
-         'ARMS'        => 128,
-         'BACK'        => 256,
-         'WRIST-L'     => 512,
-         'WRIST-R'     => 1024,
-         'RANGE'       => 2048,
-         'HANDS'       => 4096,
-         'PRIMARY'     => 8192,
-         'SECONDARY'   => 16384,
-         'RING-L'      => 32768,
-         'RING-R'      => 65536,
-         'CHEST'       => 131072,
-         'LEGS'        => 262144,
-         'FEET'        => 524288,
-         'WAIST'       => 1048576,
-         'POWERSOURCE' => 2097152,
-         'AMMO'        => 4194304,
-      ];
-
-      foreach ($slotList as $slotName => $slotMask) {
-         if ($slotBits & $slotMask) { $return[] = ($collapseSlots) ? preg_replace('/-.*$/','',$slotName): $slotName; }
-      } 
-
-      return array_unique($return);
-   }
-
-   public function decodeItemEffectType($effectTypeId) 
-   {
-      $effectTypeList = [
-         0 => 'CombatProc',
-         1 => 'Click',
-         2 => 'Worn',
-         3 => 'Expendable',
-         4 => 'EquipClick',
-         5 => 'Click2',
-         6 => 'Focus',
-         7 => 'Scroll',
-         8 => 'Count',
-      ];
-
-      return $effectTypeList[$effectTypeId] ?: null;
-   }
-
-   public function decodeItemType($typeId, $useSkill = false) 
-   {
-      $typeList = [
-         0  => ['1H Slashing','1H Slashing'],
-         1  => ['2H Slashing','2H Slashing'],
-         2  => ['Piercing','Piercing'],
-         3  => ['1H Blunt','1H Blunt'],
-         4  => ['2H Blunt','2H Blunt'],
-         5  => ['Bow','Archery'],
-         7  => ['Large Throwing','Throwing'],
-         18 => ['Small Throwing','Throwing'],
-         45 => ['Martial','Hand to Hand']
-      ];
-
-      $element = ($useSkill) ? 1 : 0;
-
-      return $typeList[$typeId][$element] ?: null;
-   }
-
-   public function decodeWeaponSkill($typeId) 
-   {
-      // We only look at weapon skills
-      if (!in_array($typeId,[1,2,3,4,5,7,18,34,45])) { return null; }
-
-      return $this->decodeItemType($typeId,true);
-   }
-
-   public function decodeItemSize($sizeVal = 0) 
-   {
-      $sizeList = [
-         0 => 'TINY',
-         1 => 'SMALL',
-         2 => 'MEDIUM',
-         3 => 'LARGE',
-         4 => 'GIANT',
-         5 => 'GIGANTIC',
-      ];
-
-      return $sizeList[$sizeVal] ?: null;
-   }
-
-   public function decodeItemWeight($weightVal = 0) 
-   {
-      return sprintf("%1.1f",$weightVal / 10);
-   }
-
-   public function decodeCastTime($castTime = 0) 
-   {
-      return sprintf("%1.1f",$castTime / 1000);
-   }
 
    public function createItemDescription($itemData)
    {
@@ -326,12 +158,12 @@ class ItemModel extends DefaultModel
       }
 
       $values['effect']      = null;
-      $values['slotList']    = $this->decodeItemSlots($itemData['slots'],true);
-      $values['classList']   = $this->decodeItemClasses($itemData['classes']);
-      $values['raceList']    = $this->decodeItemRaces($itemData['races']);
-      $values['sizeName']    = $this->decodeItemSize($itemData['size'] ?: 0);
-      $values['weightVal']   = $this->decodeItemWeight($itemData['weight'] ?: 0);
-      $values['weaponSkill'] = $this->decodeWeaponSkill($itemData['itemtype']);
+      $values['slotList']    = $this->decodeModel->decodeItemSlots($itemData['slots'],true);
+      $values['classList']   = $this->decodeModel->decodeItemClasses($itemData['classes']);
+      $values['raceList']    = $this->decodeModel->decodeItemRaces($itemData['races']);
+      $values['sizeName']    = $this->decodeModel->decodeItemSize($itemData['size'] ?: 0);
+      $values['weightVal']   = $this->decodeModel->decodeItemWeight($itemData['weight'] ?: 0);
+      $values['weaponSkill'] = $this->decodeModel->decodeWeaponSkill($itemData['itemtype']);
 
       $values['PROPERTIES'] = implode(' ',$values['propertyList'] ?? []); 
       $values['SLOTS']      = ($values['slotList']) ? 'Slot: '.implode(' ',$values['slotList'] ?? []) : '';
@@ -355,8 +187,8 @@ class ItemModel extends DefaultModel
       else if ($itemData['clickeffect']) {
          $values['effect'] = $itemData['clickeffect'];
 
-         $effectType = $this->decodeItemEffectType($itemData['clicktype']);
-         $castTime   = $this->decodeCastTime($itemData['casttime']);
+         $effectType = $this->decodeModel->decodeItemEffectType($itemData['clicktype']);
+         $castTime   = $this->decodeModel->decodeCastTime($itemData['casttime']);
 
          if (preg_match('/^equipclick$/i',$effectType)) { 
             $values['effectLabel'] = sprintf("(Must Equip. Casting Time: %s)",($castTime > 0) ? $castTime : 'Instant');
@@ -364,8 +196,8 @@ class ItemModel extends DefaultModel
       }
 
       if ($values['effect'] > 0) {
-         $spellInfo = $this->spellModel->getSpellById($values['effect']);
-         $spellName = $spellInfo['name'];
+         $spell     = $this->spellModel->getSpellById($values['effect']);
+         $spellName = $spell->property('name');
       }
 
       $values['EFFECT'] = ($values['effect'] && $spellName) ? sprintf("Effect: %s %s",$spellName,$values['effectLabel']) : ''; 
