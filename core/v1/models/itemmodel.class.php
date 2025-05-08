@@ -34,7 +34,7 @@ class ItemModel extends DefaultModel
    }
 
    /**
-    * getAll
+    * searchByName
     *
     * @return mixed
     */
