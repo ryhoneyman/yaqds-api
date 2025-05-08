@@ -73,4 +73,24 @@ class SpellController extends DefaultController
 
       return $this->standardOk($spellEffectInfo);
    }
+   
+   public function searchSpells($request)
+   {
+      $this->debug(7,'method called');
+
+      $parameters = $request->parameters;
+      $filterData = $request->filterData;
+
+      $searchName = $parameters['name'];
+      $searchLike = $parameters['like'];
+      $searchMax  = $parameters['max'];
+
+      $spellData = $this->spellModel->searchByName($searchName,$searchLike,$searchMax);
+
+      if ($spellData === false) { return $this->standardError($this->spellModel->error); }
+      if (!$spellData)          { return $this->standardNotFound("No matches"); }
+
+      return $this->standardOk($spellData);
+   }
+
 }
