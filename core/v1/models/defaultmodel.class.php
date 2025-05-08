@@ -14,7 +14,7 @@ abstract class DefaultModel extends LWPLib\Base
 
       if (!$main || !$main->obj('apicore')) { $this->notReady('Cannot locate main libraries'); return; }
 
-      if (!$main->loadDefinesFromDB('YAQDS_API_%')) { $this->notReady('Cannot load database defines'); return; };
+      if (!$main->loadDefinesFromDB('MY_API_%')) { $this->notReady('Cannot load database defines'); return; };
 
       $apiOptions = ['baseUrl' => MY_API_URL, 'authToken' => MY_API_AUTH_TOKEN];
 
