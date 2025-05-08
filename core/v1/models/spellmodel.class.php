@@ -86,6 +86,28 @@ class SpellModel extends DefaultModel
       return $result;
    }
 
+   /**
+    * searchByName
+    *
+    * @return mixed
+    */
+    public function searchByName($name, $like = false, $limit = null): mixed
+    {
+       if (empty($name)) { return null; }
+ 
+       if (is_null($limit)) { $limit = 50; }
+ 
+       $database  = 'yaqds';
+       $statement = "SELECT id, name FROM spells_new where name ".(($like) ? "like ?" : " = ?")." LIMIT $limit";
+  
+       $result = $this->api->v1DataProviderBindQuery($database,$statement,'s',($like) ? ["%$name%"] : ["$name"]);
+  
+       if ($result === false) { $this->error = $this->api->error(); return false; }
+  
+       return (isset($result['data']['results'])) ? $result['data']['results'] : null;
+    }
+    
+
    public function createSpellDescription($spell)
    {
       $return = [];
@@ -165,9 +187,10 @@ class SpellModel extends DefaultModel
                );
       }
    
-      $spellData['hasDuration'] = $hasDuration;
-      $spellData['minDuration'] = $minDuration;
-      $spellData['maxDuration'] = $maxDuration;
+      $spellData['hasDuration']    = $hasDuration;
+      $spellData['minDuration']    = $minDuration;
+      $spellData['maxDuration']    = $maxDuration;
+      $spellData['targetTypeName'] = $this->decodeModel->decodeSpellTargetType($targetType);
    
       // Process levels for effect data
       foreach ($effectList as $effectPos => $effectInfo) {
@@ -201,7 +224,7 @@ class SpellModel extends DefaultModel
    
       $effectDisplayList = [];
       foreach ($effectValues as $effectPos => $effectInfo) { 
-         $effectDisplayList[$effectPos] = sprintf(" - %s",$this->createFormattedSpellEffectText($spellData,$effectInfo));
+         $effectDisplayList[$effectPos] = sprintf(" %2d: %s",$effectPos,$this->createFormattedSpellEffectText($spellData,$effectInfo));
       }
    
       $values['MANA COST'] = $manaCost ? sprintf("Mana Cost: %s",$manaCost) : '';
@@ -209,13 +232,13 @@ class SpellModel extends DefaultModel
       $values['RECAST TIME'] = $recastTime ? sprintf("Recast Time: %s",$recastTime) : '';
       $values['RECOVERY TIME'] = $recoveryTime ? sprintf("Recovery Time: %s",$recoveryTime) : '';
       $values['DURATION'] = $duration ? sprintf("Duration: %s",$duration) : '';
-      $values['TARGET'] = sprintf("Target: %s",$this->decodeModel->decodeSpellTargetType($targetType));
+      $values['TARGET'] = sprintf("Target: %s",$spellData['targetTypeName']);
       $values['RESIST'] = sprintf("Resist: %s%s",$this->decodeModel->decodeResistType($resistType),$resistDiff ? sprintf(" (%d)",$resistDiff) : '');
       $values['RANGE'] = $spellData['range'] ? sprintf("Range: %s",$spellData['range']) : '';
       $values['AE RANGE'] = $spellData['ae_range'] ? sprintf("AE Range: %s",$spellData['ae_range']) : '';
       $values['CAST ON YOU'] = $spellData['cast_on_you'] ? sprintf("On you: %s",$spellData['cast_on_you']) : '';
       $values['CAST ON OTHER'] = $spellData['cast_on_other'] ? sprintf("On others: Target %s",$spellData['cast_on_other']) : '';
-      $values['CLASSES'] = implode(' ', array_map(function ($key, $value) { return sprintf('%s(%d)', $key, $value); }, array_keys($classList), $classList));
+      $values['CLASSES'] = sprintf("Classes: %s",implode(' ', array_map(function ($key, $value) { return sprintf('%s(%d)', $key, $value); }, array_keys($classList), $classList)));
       $values['SKILL'] = sprintf("Skill: %s",preg_replace('/([a-z])([A-Z])/','$1 $2',$this->decodeModel->decodeSkill($spellData['skill'])));
 
       $return = [];
