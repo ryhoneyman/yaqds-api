@@ -7,8 +7,9 @@ abstract class DefaultModel extends LWPLib\Base
    public    ?Main           $main          = null;
    public    ?APICore        $apicore       = null;
    public    ?MyAPI          $api           = null;
+   public    ?string         $dbName        = null;
    
-   public function __construct(?LWPLib\Debug $debug = null, ?Main $main = null)
+   public function __construct(?LWPLib\Debug $debug = null, ?Main $main = null, ?array $options = null)
    {
       parent::__construct($debug);
 
@@ -24,6 +25,7 @@ abstract class DefaultModel extends LWPLib\Base
          $this->main    = $main;
          $this->apicore = $main->obj('apicore');
          $this->api     = $main->obj('api');
+         $this->dbName  = $options['dbName'] ?? null;
       }
    }
 

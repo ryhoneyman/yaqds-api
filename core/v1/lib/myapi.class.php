@@ -19,14 +19,33 @@ class MyAPI extends LWPLib\APIBase
 
       $this->authType('auth.header.bearer');
 
-      $this->loadUris(array(
+      $this->loadUris([
          'v1-authenticate'              => '/v1/auth/token',
          'v1-data-provider-query'       => '/v1/data/provider/query/{{database}}',
          'v1-data-provider-query-table' => '/v1/data/provider/query/{{database}}/{{table}}',
          'v1-data-provider-modify'      => '/v1/data/provider/modify/{{database}}',
-      ));
+         'v1-spells'                    => '/v1/spell?fields={{fields}}',
+      ]);
    }
    
+
+   public function v1GetSpells($fields = null)
+   {
+      $request = [
+         'params' => ['fields' => $fields],
+         'options' => [
+            'method' => 'GET',
+         ]
+      ];
+
+      if (!$this->makeRequest('v1-spells','auth,json',$request)) { 
+        $this->error($this->clientError());
+        return false; 
+      }
+
+      return $this->clientResponse();
+   }
+
    /**
     * v1Authenticate
     *

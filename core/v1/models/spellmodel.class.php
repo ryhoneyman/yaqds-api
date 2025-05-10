@@ -12,21 +12,22 @@ class SpellModel extends DefaultModel
    protected $dataModel   = null;
    protected $format      = null;
 
-   public function __construct($debug = null, $main = null)
+   public function __construct($debug = null, $main = null, $options = null)
    {
-      parent::__construct($debug,$main);
+      parent::__construct($debug,$main,$options);
 
-      $this->decodeModel = new DecodeModel($debug,$main);
-      $this->dataModel   = new DataModel($debug,$main);
+      $this->decodeModel = new DecodeModel($debug,$main,$options);
+      $this->dataModel   = new DataModel($debug,$main,$options);
       $this->format      = new LWPLib\Format($debug);
    }
 
-   public function getAll()
+   public function getAll($fields = null)
    {
-      $database  = 'yaqds';
-      $statement = "SELECT id, name FROM spells_new";
+      if (is_null($fields)) { $fields = 'id,name'; }
 
-      $result = $this->api->v1DataProviderBindQuery($database,$statement);
+      $statement = "SELECT $fields FROM spells_new";
+
+      $result = $this->api->v1DataProviderBindQuery($this->dbName,$statement);
 
       if ($result === false) { $this->error = $this->api->error(); return false; }
 
@@ -35,12 +36,11 @@ class SpellModel extends DefaultModel
 
    public function getSpellById($spellId)
    {
-      $database  = 'yaqds';
       $statement = "SELECT * FROM spells_new where id = ?";
       $types     = 'i';
       $data      = [(int)$spellId];
 
-      $result = $this->api->v1DataProviderBindQuery($database,$statement,$types,$data,['single' => true]);
+      $result = $this->api->v1DataProviderBindQuery($this->dbName,$statement,$types,$data,['single' => true]);
 
       if ($result === false) { $this->error = $this->api->error(); return false; }
  
@@ -97,10 +97,9 @@ class SpellModel extends DefaultModel
  
        if (is_null($limit)) { $limit = 50; }
  
-       $database  = 'yaqds';
        $statement = "SELECT id, name FROM spells_new where name ".(($like) ? "like ?" : " = ?")." LIMIT $limit";
   
-       $result = $this->api->v1DataProviderBindQuery($database,$statement,'s',($like) ? ["%$name%"] : ["$name"]);
+       $result = $this->api->v1DataProviderBindQuery($this->dbName,$statement,'s',($like) ? ["%$name%"] : ["$name"]);
   
        if ($result === false) { $this->error = $this->api->error(); return false; }
   
@@ -445,24 +444,41 @@ class SpellModel extends DefaultModel
          case 11: {
             $petInfo = $this->dataModel->getPetInfoBySpellId($spellId);
 
+            $this->debug->writeFile('petinfo.log',json_encode(['petinfo' => $petInfo, 'spellid' => $spellId]));
+
             foreach ($petInfo as $petKey => $petValue) { $values["pet:$petKey"] = $petValue; }
 
             $effectFormat .= "{{effect:label}}: L{{pet:level}} {{pet:name}}";
 
             break;
          }
+         // Slot conditional
          case 12: {
             $newEffect      = $values['effect:base'] ? $this->decodeModel->decodeSpellEffect($values['effect:base']): null;
             $newEffectLabel = (!is_null($newEffect)) ? $newEffect['display']['label'] : '';
             $newSlot        = $values['effect:formula'] ? $values['effect:formula'] - 201 + 1 : 0;
-            $effectFormat   = sprintf("{{effect:label}} if Slot %s is '%s' and < {{effect:max}}",$newSlot,$newEffectLabel);
+
+            $effectFormat .= sprintf("{{effect:label}} if Slot %s is '%s' and < {{effect:max}}",$newSlot,$newEffectLabel);
 
             break;
          }
+         // Percent of 100
+         case 13: {
+            // Assume min/max are either both over 100 or both under 100
+            $offsetMinValue  = ($minValue - 100);
+            $offsetMaxValue  = ($maxValue - 100);
+            $adjustLabel     = ($maxValue > 100) ? 'Increase' : 'Decrease';
+            $valueDesc       = ($offsetMinValue != $offsetMaxValue) ? sprintf("%s%% to %s%%",abs($offsetMinValue),abs($offsetMaxValue)) : sprintf("%s%%",abs($offsetMaxValue));
+
+            $effectFormat .= sprintf("%s {{effect:label}} by %s",$adjustLabel,$valueDesc);
+
+            break;
+         }
+
          // Custom format or generic label only
          default: $effectFormat .= ($textFormat) ? $textFormat : "{{effect:label}}";
       }
-      
+
       $effectFormat = $this->main->replaceValues($effectFormat,$values) ?: sprintf("Missing: %s/%s",$effectId,$effectName);
 
       return $effectFormat;

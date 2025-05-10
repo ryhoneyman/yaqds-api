@@ -8,12 +8,12 @@ class ItemModel extends DefaultModel
    protected $decodeModel = null;
    protected $spellModel  = null;
 
-   public function __construct($debug = null, $main = null)
+   public function __construct($debug = null, $main = null, $options = null)
    {
-      parent::__construct($debug,$main);
+      parent::__construct($debug,$main,$options);
 
-      $this->decodeModel = new DecodeModel($debug,$main);
-      $this->spellModel  = new SpellModel($debug,$main);
+      $this->decodeModel = new DecodeModel($debug,$main,$options);
+      $this->spellModel  = new SpellModel($debug,$main,$options);
    }
    
    /**
@@ -23,10 +23,9 @@ class ItemModel extends DefaultModel
     */
    public function getAll(): mixed
    {
-      $database  = 'yaqds';
       $statement = "SELECT id, name FROM items";
 
-      $result = $this->api->v1DataProviderBindQuery($database,$statement);
+      $result = $this->api->v1DataProviderBindQuery($this->dbName,$statement);
 
       if ($result === false) { $this->error = $this->api->error(); return false; }
 
@@ -44,10 +43,9 @@ class ItemModel extends DefaultModel
 
       if (is_null($limit)) { $limit = 50; }
 
-      $database  = 'yaqds';
       $statement = "SELECT id, name FROM items where name ".(($like) ? "like ?" : " = ?")." LIMIT $limit";
  
-      $result = $this->api->v1DataProviderBindQuery($database,$statement,'s',($like) ? ["%$name%"] : ["$name"]);
+      $result = $this->api->v1DataProviderBindQuery($this->dbName,$statement,'s',($like) ? ["%$name%"] : ["$name"]);
  
       if ($result === false) { $this->error = $this->api->error(); return false; }
  
@@ -62,10 +60,9 @@ class ItemModel extends DefaultModel
     */
    public function getItemById(int $itemId): mixed
    {
-      $database  = 'yaqds';
       $statement = "SELECT * FROM items where id = ?";
 
-      $result = $this->api->v1DataProviderBindQuery($database,$statement,'i',[$itemId],['single' => true]);
+      $result = $this->api->v1DataProviderBindQuery($this->dbName,$statement,'i',[$itemId],['single' => true]);
 
       $this->main->debug->writeFile('itemmodel.getitembyid.debug.log',json_encode([
          'statement' => $statement,

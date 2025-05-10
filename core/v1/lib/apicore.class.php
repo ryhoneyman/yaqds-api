@@ -352,9 +352,9 @@ class APICore extends LWPLib\Base
    {
       $this->debug(7,'method called');
 
-      $format = "('%s',%d,'%s','%s',%d,'%s',%1.5f,%d)\n";
+      $format = "('%s',%d,'%s','%s',%d,'%s',%1.5f,%d,%d)\n";
       $entry  = sprintf($format,gmdate('Y-m-d H:i:s'),$request->keyId,$request->pathInfo,$request->method,$response->statusCode,
-                                $response->statusMessage,$elapsedtime,$response->contentLength);
+                                $response->statusMessage,$elapsedtime,$response->contentLength,memory_get_usage(true));
 
       $result = file_put_contents($this->logDir.'/api.request.log',$entry,FILE_APPEND|LOCK_EX);
 

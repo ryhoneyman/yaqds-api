@@ -3,6 +3,7 @@
 class ItemController extends DefaultController
 {
    protected $itemModel  = null;
+   protected $dbName     = 'yaqds';
    
    /**
     * __construct
@@ -18,7 +19,7 @@ class ItemController extends DefaultController
       $this->debug(5,get_class($this).' class instantiated');
 
       // The model provides all the data and methods to retrieve it; connect it and bring it online
-      $this->itemModel  = new ItemModel($debug,$main); 
+      $this->itemModel  = new ItemModel($debug,$main,['dbName' => $this->dbName]); 
 
       // If the model isn't ready we need to flag the controller as not ready and set status
       if (!$this->itemModel->ready)  { $this->notReady($this->itemModel->error); return; }

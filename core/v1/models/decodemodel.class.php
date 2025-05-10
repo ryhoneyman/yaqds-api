@@ -5,9 +5,9 @@
  */
 class DecodeModel extends DefaultModel
 {   
-   public function __construct($debug = null, $main = null)
+   public function __construct($debug = null, $main = null, $options = null)
    {
-      parent::__construct($debug,$main);
+      parent::__construct($debug,$main,$options);
    }
 
    public function decodeItemClasses($classesBits)
@@ -551,7 +551,7 @@ class DecodeModel extends DefaultModel
          ],
          '11' => [
             'name'    => 'SE_AttackSpeed',
-            'display' => ['format' => 1, 'label' => 'Attack Speed'],
+            'display' => ['format' => 13, 'label' => 'Attack Speed'],
          ],
          '12' => [
             'name'    => 'SE_Invisibility',
@@ -1520,7 +1520,7 @@ class DecodeModel extends DefaultModel
    public function decodeResistType($resistTypeId)
    {
       $resistTypeList = [
-         '0' => 'None',
+         '0' => 'Unresistable',
          '1' => 'Magic',
          '2' => 'Fire',
          '3' => 'Cold',

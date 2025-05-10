@@ -4,8 +4,8 @@ abstract class DefaultController extends LWPLib\Base
 {
    public $statusCode    = 405;
    public $statusMessage = 'Method Not Defined';
-   public $headers       = array();
-   public $content       = array();
+   public $headers       = [];
+   public $content       = [];
    public ?Main $main    = null;
    public $apicore       = null;
    public $ready         = true;
@@ -20,10 +20,12 @@ abstract class DefaultController extends LWPLib\Base
    public function __construct($debug = null, $main = null)
    {
       parent::__construct($debug);
-
+      
       if (!$main || !$main->obj('apicore')) {
-         $this->notReady('Cannot locate main libraries',null,null);
+         $this->notReady('Cannot locate main or the required libraries',null,null);
       }
+
+      if (!$main->buildClass('input','LWPLib\Input',['noBody' => true],'input.class.php')) { $this->notReady("Input library error"); }
 
       if ($this->ready) {
          $this->main    = $main;

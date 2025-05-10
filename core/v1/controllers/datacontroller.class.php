@@ -19,8 +19,6 @@ class DataController extends DefaultController
 
       $this->debug(5,get_class($this).' class instantiated');
 
-      if (!$main->buildClass('input','LWPLib\Input',array('noBody' => true),'input.class.php')) { $this->notReady("Input library error"); }
-
       $this->fieldQualifiers = array(
          'startswith' => array('validFor' => array('string')),
          'contains'   => array('validFor' => array('string','json')),
@@ -43,6 +41,8 @@ class DataController extends DefaultController
    public function bindQueryDatabase(LWPLib\Request $request): bool
    {
       $this->debug(7,'method called');
+
+      $this->main->setMemoryLimit('256M');
 
       $parameters = $request->parameters;
       $filterData = $request->filterData;
@@ -71,7 +71,7 @@ class DataController extends DefaultController
       $db       = $this->main->db($dbName);
       $dbResult = $db->bindQuery($statement,$types,$data,array('index' => $useIndex, 'single' => $singleReturn));
 
-      $this->main->debug->writeFile('datacontroller.debug.log',json_encode([$dbResult,$statement,$types,$data,$useIndex,$singleReturn]),false);
+      //$this->main->debug->writeFile('datacontroller.debug.log',json_encode([$dbResult,$statement,$types,$data,$useIndex,$singleReturn]),false);
 
       if ($dbResult === false) { return $this->standardError("could not query database",500); }
 
