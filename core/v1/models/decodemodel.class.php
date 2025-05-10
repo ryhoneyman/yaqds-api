@@ -1400,7 +1400,7 @@ class DecodeModel extends DefaultModel
          '2'  => 'GroupV1',
          '3'  => 'GroupTeleport',
          '4'  => 'PBAE',
-         '5'  => 'SingleTarget',
+         '5'  => 'Single',
          '6'  => 'Self',
          '8'  => 'TargetAE',
          '9'  => 'Animal',
