@@ -33,7 +33,7 @@ if (!$main->buildClass('api','MyAPI',$apiOptions,'myapi.class.php')) { $main->de
 if (!$main->buildClass('apicore','ApiCore',$main->db(),'apicore.class.php')) { $main->debug(0,"API Core not available"); exit; }
 
 // Our default database is the API database, so create another connection to the Data database
-$main->connectDatabase('db.yaqds.conf','yaqds');
+$main->connectDatabase('yaqds','db.yaqds.conf');
 
 /** @var MyAPI $api */
 $api = $main->obj('api');

@@ -27,7 +27,7 @@ $main->buildClass('request','LWPLib\Request',null,'request.class.php');
 $main->buildClass('response','LWPLib\Response',null,'response.class.php');
 $main->buildClass('router','Router',null,'router.class.php');
 
-$main->prepareDatabase('db.yaqds.conf','yaqds');
+$main->prepareDatabase('yaqds','db.yaqds.conf');
 
 $apicore  = $main->obj('apicore');
 $router   = $main->obj('router');

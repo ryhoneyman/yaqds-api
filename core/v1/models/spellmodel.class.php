@@ -444,8 +444,6 @@ class SpellModel extends DefaultModel
          case 11: {
             $petInfo = $this->dataModel->getPetInfoBySpellId($spellId);
 
-            $this->debug->writeFile('petinfo.log',json_encode(['petinfo' => $petInfo, 'spellid' => $spellId]));
-
             foreach ($petInfo as $petKey => $petValue) { $values["pet:$petKey"] = $petValue; }
 
             $effectFormat .= "{{effect:label}}: L{{pet:level}} {{pet:name}}";

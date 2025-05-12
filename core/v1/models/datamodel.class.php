@@ -12,17 +12,17 @@ class DataModel extends DefaultModel
 
    public function getPetInfoBySpellId($spellId)
    {
-      if (!$this->main->connectDatabase($this->dbName) === false) { $this->error('database not available'); return false; }
+      if ($this->main->connectDatabase($this->dbName) === false) { $this->error('database not available: '.$this->main->error()); return false; }
 
       $magicianPetTypeList = [
          'Fire'  => [626, 630, 634, 316, 399, 403, 395, 498, 571, 575, 622, 1673, 1677, 3322],
          'Air'   => [627, 631, 635, 317, 396, 400, 404, 499, 572, 576, 623, 1674, 1678, 3371],
          'Earth' => [624, 628, 632, 58, 397, 401, 335, 496, 569, 573, 620, 1675, 1671, 3324],
-         'Water' => [625, 629, 633, 315, 398, 403, 336, 497, 570, 574, 621, 1676, 1672, 3320],
+         'Water' => [625, 629, 633, 315, 398, 402, 336, 497, 570, 574, 621, 1676, 1672, 3320],
       ];
 
       $petInfo = $this->main->db($this->dbName)->bindQuery("SELECT r.name,nt.level,nt.race,nt.bodytype FROM spells_new sn LEFT JOIN pets p ON sn.teleport_zone = p.type ". 
-                                      "LEFT JOIN npc_types nt ON nt.id = p.npcID LEFT JOIN races r ON r.id = nt.race WHERE sn.id = ?;",'i',array($spellId),array('single' => true));                        
+                                      "LEFT JOIN npc_types nt ON nt.id = p.npcID LEFT JOIN races r ON r.id = nt.race WHERE sn.id = ?",'i',[$spellId],['single' => true]);                        
 
       foreach ($magicianPetTypeList as $petType => $spellIdList) {
          if (in_array($spellId,$spellIdList)) { $petInfo['name'] = sprintf("%s %s",$petType,$petInfo['name']); }
@@ -37,7 +37,7 @@ class DataModel extends DefaultModel
 
       $return = array();
 
-      if (!$this->main->connectDatabase($this->dbName) === false) { $this->error('database not available'); return false; }
+      if ($this->main->connectDatabase($this->dbName) === false) { $this->error('database not available: '.$this->main->error()); return false; }
 
       $entryList = $this->main->db($this->dbName)->bindQuery("SELECT *, concat(loottable_id,'^',lootdrop_id) as id FROM loottable_entries WHERE loottable_id = ?",'i',array($lootTableId),array('index' => 'id'));
 
@@ -50,7 +50,7 @@ class DataModel extends DefaultModel
 
       $return = array();
 
-      if (!$this->main->connectDatabase($this->dbName) === false) { $this->error('database not available'); return false; }
+      if ($this->main->connectDatabase($this->dbName) === false) { $this->error('database not available'); return false; }
 
       $entryList = $this->main->db($this->dbName)->bindQuery("SELECT lde.item_id, i.name as item_name, lde.chance, lde.multiplier, ".
                                         "lde.min_expansion as drop_min_expansion, lde.max_expansion as drop_max_expansion, ".
@@ -68,9 +68,9 @@ class DataModel extends DefaultModel
 
       $return = array();
 
-      if (!$this->main->connectDatabase($this->dbName) === false) { $this->error('database not available'); return false; }
+      if ($this->main->connectDatabase($this->dbName) === false) { $this->error('database not available: '.$this->main->error()); return false; }
 
-      //$npcLootTables = $this->main->db()->query("SELECT distinct(concat(nt.name,'^',nt.loottable_id,'^',s2.zone,'^',s2.min_expansion,'-',s2.max_expansion,'^',se.min_expansion,'-',se.max_expansion)) as entry FROM npc_types nt LEFT JOIN spawnentry se ON nt.id = se.npcID LEFT JOIN spawn2 s2 ON se.spawngroupID = s2.spawngroupID WHERE nt.loottable_id > 0 and nt.level >= 10");
+      //$npcLootTables = $this->main->db($this->dbName)->query("SELECT distinct(concat(nt.name,'^',nt.loottable_id,'^',s2.zone,'^',s2.min_expansion,'-',s2.max_expansion,'^',se.min_expansion,'-',se.max_expansion)) as entry FROM npc_types nt LEFT JOIN spawnentry se ON nt.id = se.npcID LEFT JOIN spawn2 s2 ON se.spawngroupID = s2.spawngroupID WHERE nt.loottable_id > 0 and nt.level >= 10");
       
       $npcLootTables = $this->main->db($this->dbName)->query("SELECT id, nt_name, nt_loottable_id, s2_zone, s2_min_expansion, s2_max_expansion, se_min_expansion, se_max_expansion FROM yaqds_npc_loottable WHERE nt_level >= 10");
 
@@ -116,7 +116,7 @@ class DataModel extends DefaultModel
    {
       $this->debug(8,"called");
 
-      if (!$this->main->connectDatabase($this->dbName) === false) { $this->error('database not available'); return false; }
+      if ($this->main->connectDatabase($this->dbName) === false) { $this->error('database not available: '.$this->main->error()); return false; }
 
       if (!preg_match('/^[\w\:]+$/',$ruleName)) { $this->error('invalid ruleName provided'); return false; }
 
@@ -127,7 +127,7 @@ class DataModel extends DefaultModel
    {
       $this->debug(8,"called");
 
-      if (!$this->main->connectDatabase($this->dbName) === false) { $this->error('database not available'); return false; }
+      if ($this->main->connectDatabase($this->dbName) === false) { $this->error('database not available: '.$this->main->error()); return false; }
 
       if (!preg_match('/^\d+$/',$itemId)) { $this->error('invalid itemId provided'); return false; }
 
@@ -138,7 +138,7 @@ class DataModel extends DefaultModel
    {
       $this->debug(8,"called");
 
-      if (!$this->main->connectDatabase($this->dbName) === false) { $this->error('database not available'); return false; }
+      if ($this->main->connectDatabase($this->dbName) === false) { $this->error('database not available: '.$this->main->error()); return false; }
 
       if (!preg_match('/^\w+$/',$zoneName)) { $this->error('invalid zoneName provided'); return false; }
 
@@ -149,7 +149,7 @@ class DataModel extends DefaultModel
    {
       $this->debug(8,"called");
 
-      if (!$this->main->connectDatabase($this->dbName) === false) { $this->error('database not available'); return false; }
+      if ($this->main->connectDatabase($this->dbName) === false) { $this->error('database not available: '.$this->main->error()); return false; }
 
       if (!is_null($expansion) && !preg_match('/^[\d\.]+$/',$expansion)) { $this->error('invalid expansion provided'); return false; }
 
@@ -174,7 +174,7 @@ class DataModel extends DefaultModel
 
       $return = array();
 
-      if (!$this->main->connectDatabase($this->dbName) === false) { $this->error('database not available'); return false; }
+      if ($this->main->connectDatabase($this->dbName) === false) { $this->error('database not available: '.$this->main->error()); return false; }
 
       if (!preg_match('/^\w+$/',$zoneName)) { $this->error('invalid zoneId provided'); return false; }
    
@@ -198,7 +198,7 @@ class DataModel extends DefaultModel
    {
       $this->debug(8,"called");
 
-      if (!$this->main->connectDatabase($this->dbName) === false) { $this->error('database not available'); return false; }
+      if ($this->main->connectDatabase($this->dbName) === false) { $this->error('database not available: '.$this->main->error()); return false; }
 
       // Make sure these values are sanitized
       if (!preg_match('/^\w+$/',$zoneName)) { $this->error('invalid zoneName provided'); return false; }
