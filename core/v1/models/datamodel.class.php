@@ -28,6 +28,8 @@ class DataModel extends DefaultModel
          if (in_array($spellId,$spellIdList)) { $petInfo['name'] = sprintf("%s %s",$petType,$petInfo['name']); }
       }
 
+      if (preg_match('/^invalid$/i',$petInfo['name'])) { $petInfo['name'] = ''; }
+
       return $petInfo;
    }
 
