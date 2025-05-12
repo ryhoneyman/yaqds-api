@@ -835,7 +835,7 @@ class DecodeModel extends DefaultModel
          ],
          '87' => [
             'name' => 'SE_MagnifyVision',
-            'text' => 'foo'
+            'display' => ['format' => 1, 'label' => 'Magnification', 'values' => ['effect:units' => 'raw^%']],
          ],
          '88' => [
             'name' => 'SE_Succor',
@@ -896,12 +896,12 @@ class DecodeModel extends DefaultModel
             'text' => 'foo'
          ],
          '102' => [
-            'name' => 'SE_Fearless',
-            'text' => 'foo'
+            'name'    => 'SE_Fearless',
+            'display' => ['format' => 0, 'label' => 'Fear Immunity'],
          ],
          '103' => [
             'name' => 'SE_CallPet',
-            'text' => 'foo'
+            'display' => ['format' => 0, 'label' => 'Summon Pet to Caster'],
          ],
          '104' => [
             'name' => 'SE_Translocate',
@@ -909,11 +909,11 @@ class DecodeModel extends DefaultModel
          ],
          '105' => [
             'name' => 'SE_AntiGate',
-            'text' => 'foo'
+            'display' => ['format' => 0, 'label' => 'Inhibit Gate'],
          ],
          '106' => [
             'name' => 'SE_SummonBSTPet',
-            'text' => 'foo'
+            'display' => ['format' => 11, 'label' => 'Summon Warder'],
          ],
          '107' => [
             'name' => 'SE_AlterNPCLevel',
@@ -921,7 +921,7 @@ class DecodeModel extends DefaultModel
          ],
          '108' => [
             'name' => 'SE_Familiar',
-            'text' => 'foo'
+            'display' => ['format' => 11, 'label' => 'Summon Familiar'],
          ],
          '109' => [
             'name' => 'SE_SummonItemIntoBag',
@@ -933,11 +933,11 @@ class DecodeModel extends DefaultModel
          ],
          '111' => [
             'name' => 'SE_ResistAll',
-            'text' => 'foo'
+            'display' => ['format' => 1, 'label' => 'All Resists'],
          ],
          '112' => [
             'name' => 'SE_CastingLevel',
-            'text' => 'foo'
+            'display' => ['format' => 1, 'label' => 'Effective Casting Level'],
          ],
          '113' => [
             'name' => 'SE_SummonHorse',
