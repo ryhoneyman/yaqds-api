@@ -766,8 +766,8 @@ class DecodeModel extends DefaultModel
             'display' => ['format' => 0, 'label' => 'Ultravision'],
          ],
          '67' => [
-            'name' => 'SE_EyeOfZoom',
-            'text' => 'foo'
+            'name' => 'SE_EyeOfZomm',
+            'display' => ['format' => 11, 'label' => 'Summon'],
          ],
          '68' => [
             'name'    => 'SE_ReclaimPet',
@@ -778,8 +778,8 @@ class DecodeModel extends DefaultModel
             'display' => ['format' => 1, 'label' => 'Maximum Hitpoints'],
          ],
          '71' => [
-            'name' => 'SE_NecPet',
-            'text' => 'foo'
+            'name'    => 'SE_NecPet',
+            'display' => ['format' => 11, 'label' => 'Summon Undead'],
          ],
          '73' => [
             'name'    => 'SE_Bindsight',
@@ -881,7 +881,7 @@ class DecodeModel extends DefaultModel
          ],
          '98' => [
             'name' => 'SE_AttackSpeed2',
-            'text' => 'foo'
+            'display' => ['format' => 13, 'label' => 'Haste v2'],
          ],
          '99' => [
             'name'    => 'SE_Root',
@@ -892,7 +892,7 @@ class DecodeModel extends DefaultModel
             'text' => 'foo'
          ],
          '101' => [
-            'name' => 'SE_CompleteHeal',
+            'name'    => 'SE_CompleteHeal',
             'text' => 'foo'
          ],
          '102' => [
@@ -953,7 +953,7 @@ class DecodeModel extends DefaultModel
          ],
          '116' => [
             'name' => 'SE_CurseCounter',
-            'text' => 'foo'
+            'display' => ['format' => 1, 'label' => 'Curse Counter'],
          ],
          '117' => [
             'name' => 'SE_MagicWeapon',
@@ -1040,8 +1040,8 @@ class DecodeModel extends DefaultModel
             'text' => 'foo'
          ],
          '151' => [
-            'name' => 'SE_SuspendPet',
-            'text' => 'foo'
+            'name'    => 'SE_SuspendPet',
+            'display' => ['format' => 0, 'label' => 'Suspend Pet'],
          ],
          '152' => [
             'name' => 'SE_TemporaryPets',
