@@ -466,7 +466,7 @@ class SpellModel extends DefaultModel
             $offsetMinValue  = ($minValue - 100);
             $offsetMaxValue  = ($maxValue - 100);
             $adjustLabel     = ($maxValue > 100) ? 'Increase' : 'Decrease';
-            $valueDesc       = ($offsetMinValue != $offsetMaxValue) ? sprintf("%s%% to %s%%",abs($offsetMinValue),abs($offsetMaxValue)) : sprintf("%s%%",abs($offsetMaxValue));
+            $valueDesc       = ($offsetMinValue != $offsetMaxValue) ? sprintf("%s%% (L%s) to %s%% (L%s)",abs($offsetMinValue),$minLevel,abs($offsetMaxValue),$maxLevel) : sprintf("%s%%",abs($offsetMaxValue));
 
             $effectFormat .= sprintf("%s {{effect:label}} by %s",$adjustLabel,$valueDesc);
 
