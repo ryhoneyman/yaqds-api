@@ -872,8 +872,8 @@ class DecodeModel extends DefaultModel
             ],
          ],
          '96' => [
-            'name' => 'SE_Silence',
-            'text' => 'foo'
+            'name'    => 'SE_Silence',
+            'display' => ['format' => 0, 'label' => 'Silence']
          ],
          '97' => [
             'name' => 'SE_ManaPool',
