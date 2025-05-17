@@ -36,6 +36,18 @@ class SpellModel extends DefaultModel
 
    public function getSpellById($spellId)
    {
+      $spellData = $this->getSpellDataById($spellId);
+
+      if ($spellData === false) { return false; }
+      if (!$spellData)          { return null; }
+
+      $return = new Spell($this->debug,['data' => $spellData]);
+
+      return $return;
+   }
+
+   public function getSpellDataById($spellId)
+   {
       $statement = "SELECT * FROM spells_new where id = ?";
       $types     = 'i';
       $data      = [(int)$spellId];
@@ -48,12 +60,9 @@ class SpellModel extends DefaultModel
  
       $spellData = $result['data']['results'];
  
-      if (is_array($spellData)) { $spellData = array_change_key_case($spellData); }
+      if (is_array($spellData)) { $spellData = array_change_key_case($spellData); }  
 
-      $return = new Spell($this->debug,['data' => $spellData]);
-
-
-      return $return;
+      return $spellData;
    }
 
    public function getSpellEffectById($spellId)
@@ -161,7 +170,7 @@ class SpellModel extends DefaultModel
       $values['AE RANGE'] = $spellData['ae_range'] ? sprintf("AE Range: %s",$spellData['ae_range']) : '';
       $values['CAST ON YOU'] = $spellData['cast_on_you'] ? sprintf("On you: %s",$spellData['cast_on_you']) : '';
       $values['CAST ON OTHER'] = $spellData['cast_on_other'] ? sprintf("On others: Target %s",$spellData['cast_on_other']) : '';
-      $values['CLASSES'] = sprintf("Classes: %s",implode(' ', array_map(function ($key, $value) { return sprintf('%s(%d)', $key, $value); }, array_keys($classList), $classList)));
+      $values['CLASSES'] = $classList ? sprintf("Classes: %s",implode(' ', array_map(function ($key, $value) { return (($value == 254) ? $key : sprintf('%s(%s)',$key,$value)); }, array_keys($classList), $classList))) : '';
       $values['SKILL'] = sprintf("Skill: %s",preg_replace('/([a-z])([A-Z])/','$1 $2',$this->decodeModel->decodeSkill($spellData['skill'])));
 
       $return = [];
@@ -187,7 +196,10 @@ class SpellModel extends DefaultModel
       $availClasses = [
          'data'   => $this->dataModel,
          'decode' => $this->decodeModel,
-         'raw'    => true,       
+         'spell'  => $this,
+         'raw'    => true,    
+         'map'    => true, 
+         'values' => true,  
       ];
 
       $spellId     = $spellData['id'];
@@ -206,6 +218,7 @@ class SpellModel extends DefaultModel
       $textValues     = $effectDisplay['values'] ?: [];
       $allowDuration  = $effectDisplay['allowDuration'] ? true : false;
       $reverseAdjust  = $effectDisplay['reverseAdjust'] ? true : false;
+      $map            = $effectDisplay['map'] ?? [];
 
       foreach ($spellData as $spellDataKey => $spellDataValue) {
          $values[sprintf("spell:%s",$spellDataKey)] = $spellDataValue;
@@ -240,9 +253,18 @@ class SpellModel extends DefaultModel
 
          if (!isset($availClasses[$valueClass])) { continue; }
 
-         if ($valueClass == 'raw') { $callValue = $valueFunction; }
+         if ($valueClass == 'raw')         { $callValue = $this->processValue($valueFunction); }
+         else if ($valueClass == 'map')    { $callValue = $this->processValue($map[$valueFunction]) ?: 'Unknown'; }
+         else if ($valueClass == 'values') { $callValue = $this->processValue($values[$valueFunction]); }
          else {
-            $callResult = call_user_func_array([$availClasses[$valueClass],$valueFunction],explode(',',$valueParams));
+            $valueParamList = explode(',',$valueParams);
+            $valueArray     = [];
+
+            foreach ($valueParamList as $valueParam) {
+               $valueArray[] = $this->processValue($valueParam);
+            }
+
+            $callResult = call_user_func_array([$availClasses[$valueClass],$valueFunction],$valueArray);
             $callValue  = (($valueIndex) ? $callResult[$valueIndex] : $callResult) ?: 'Unknown';
          }
 
@@ -309,8 +331,13 @@ class SpellModel extends DefaultModel
             $effectFormat .= "{{spell:targetName}}{{effect:label}} to {{spell:zoneName}} ({{spell:effect_base_value1}},{{spell:effect_base_value2}},{{spell:effect_base_value3}})";
             $targetType   = $this->decodeModel->decodeSpellTargetType($spellData['targettype']);
 
-            $zoneInfo                   = $this->dataModel->getZoneInfoByName($spellData['teleport_zone']);
-            $values['spell:zoneName']   = $zoneInfo['long_name'] ?: 'Unknown Zone';
+            if (preg_match('/^same$/i',$spellData['teleport_zone'])) {
+               $values['spell:zoneName'] = 'Current Zone';
+            }
+            else {
+               $zoneInfo                   = $this->dataModel->getZoneInfoByName($spellData['teleport_zone']);
+               $values['spell:zoneName']   = $zoneInfo['long_name'] ?: 'Unknown Zone';
+            }
             $values['spell:targetName'] = ($targetType == 'GroupTeleport') ? 'Group ' : (($targetType == 'Self') ? 'Self ' : ''); 
             break;
          }
@@ -376,7 +403,7 @@ class SpellModel extends DefaultModel
          }
          // Slot conditional
          case 12: {
-            $newEffect      = $values['effect:base'] ? $this->decodeModel->decodeSpellEffect($values['effect:base']): null;
+            $newEffect      = $values['effect:base'] ? $this->decodeModel->decodeSpellEffect($values['effect:base']) : null;
             $newEffectLabel = (!is_null($newEffect)) ? $newEffect['display']['label'] : '';
             $newSlot        = $values['effect:formula'] ? $values['effect:formula'] - 201 + 1 : 0;
 
@@ -396,6 +423,17 @@ class SpellModel extends DefaultModel
 
             break;
          }
+         // Limits
+         // Supports:  ADJUST LABEL | ADJUST LABEL (LIMIT) | LABEL (LIMIT)
+         case 14: {
+            if (!$values['effect:limitadjust']) {
+               $values['effect:limitadjust'] = ($values['inclusion']) ? (($values[$values['inclusion']] >= 0) ? 'Include ' : 'Exclude ') : '';
+            }
+            $values['effect:limit'] = ($values['limit']) ? sprintf(" (%s%s)",$values['limit'],$values['units'] ?? '') : '';
+
+            $effectFormat .= "Limit: {{effect:limitadjust}}{{effect:label}}{{effect:limit}}";
+            break;
+         }
 
          // Custom format or generic label only
          default: $effectFormat .= ($textFormat) ? $textFormat : "{{effect:label}}";
@@ -404,6 +442,20 @@ class SpellModel extends DefaultModel
       $effectFormat = $this->main->replaceValues($effectFormat,$values) ?: sprintf("Missing: %s/%s",$effectId,$effectName);
 
       return $effectFormat;
+   }
+
+   public function processValue($value)
+   {
+      if (preg_match('/^(\S+):(.*)$/',$value,$match)) { 
+         $action   = $match[1];
+         $rawValue = $match[2];
+
+         if (preg_match('/^abs$/i',$action))        { $value = abs($rawValue); }
+         else if (preg_match('/^mstos$/i',$action)) { $value = sprintf("%1.1f",$rawValue/1000); }
+         else if (preg_match('/^neg$/i',$action))   { $value = -$rawValue; }
+      }
+
+      return $value;
    }
 
    public function processSpellData($spell)
@@ -494,7 +546,7 @@ class SpellModel extends DefaultModel
 
       $spellData['_effectList']     = $effectList;
       $spellData['_effectValues']   = $effectValues;
-      $spellData['_classList']      = $classList;
+      $spellData['_classList']      = (isset($classList['None'])) ? [] : $classList;
       $spellData['_minLevel']       = $minLevel;
       $spellData['_maxLevel']       = $maxLevel;
       $spellData['_duration']       = $duration;
