@@ -226,7 +226,7 @@ class ItemModel extends DefaultModel
          $bardTypeName  = $this->decodeModel->decodeBardType($itemData['bardtype']);
          $effectPercent = (($itemData['bardvalue']/10) - 1) * 100;
 
-         $values['BARDFOCUS'] = sprintf("Focus Effect: %s (%d%%)",$bardTypeName,$effectPercent);
+         $values['BARDFOCUS'] = sprintf("Focus Effect: %s (+%d%%)",$bardTypeName,$effectPercent);
       }
 
       $return = [];
