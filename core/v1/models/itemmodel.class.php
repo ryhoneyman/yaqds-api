@@ -98,6 +98,9 @@ class ItemModel extends DefaultModel
          "{{HP OVERFLOW}} {{MANA OVERFLOW}}",
          "{{SV FIRE}} {{SV DISEASE}} {{SV COLD}} {{SV MAGIC}} {{SV POISON}}",
          "{{EFFECT}}",
+         "{{FOCUS}}",
+         "{{FOCUSDESC}}",
+         "{{BARDFOCUS}}",
          "{{WEIGHT}} {{SIZE}}",
          "{{CLASSES}}",
          "{{RACES}}",
@@ -171,6 +174,11 @@ class ItemModel extends DefaultModel
       $values['RACES']      = 'Race: '.(($values['raceList']) ? implode(' ',$values['raceList'] ?? []) : 'NONE');   
       $values['WEIGHT']     = 'WT: '.$values['weightVal'];
       $values['SIZE']       = 'Size: '.$values['sizeName'];
+
+      $values['EFFECT']    = '';
+      $values['FOCUS']     = '';
+      $values['FOCUSDESC'] = ''; 
+      $values['BARDFOCUS'] = '';
       
       // No valid items currently have worn + proc + click effect on PQ, so we search the list in this order and never use more than one for display
       if ($itemData['worneffect']) {
@@ -198,6 +206,28 @@ class ItemModel extends DefaultModel
       }
 
       $values['EFFECT'] = ($values['effect'] && $spellName) ? sprintf("Effect: %s %s",$spellName,$values['effectLabel']) : ''; 
+
+      if ($itemData['focuseffect'] && $itemData['focustype'] == 6) {
+         $spell     = $this->spellModel->getSpellById($itemData['focuseffect']);
+         $spellName = $spell->property('name');
+
+         $values['FOCUS'] = sprintf("Focus Effect: %s",($spellName) ? $spellName : 'Unknown');
+
+         if ($spellName) {
+            $spellData    = $this->spellModel->processSpellData($spell);
+            $effectValues = $spellData['_effectValues'];
+
+            $firstEffectInfo = reset($effectValues);
+            $values['FOCUSDESC'] =  sprintf(" - %s ",$this->spellModel->createFormattedSpellEffectText($spellData,$firstEffectInfo));
+         }
+      }
+
+      if ($itemData['bardtype'] && $itemData['bardvalue']) {
+         $bardTypeName  = $this->decodeModel->decodeBardType($itemData['bardtype']);
+         $effectPercent = (($itemData['bardvalue']/10) - 1) * 100;
+
+         $values['BARDFOCUS'] = sprintf("Focus Effect: %s (%d%%)",$bardTypeName,$effectPercent);
+      }
 
       $return = [];
 

@@ -105,18 +105,12 @@ class SpellModel extends DefaultModel
   
        return (isset($result['data']['results'])) ? $result['data']['results'] : null;
     }
-    
 
    public function createSpellDescription($spell)
    {
       $return = [];
 
       if (!$spell) { return $return; }
-
-      $spellData = $spell->data;
-
-      $maxServerLevel = 65;
-      $tickInSecs     = 6;
 
       $format = [
          "{{SKILL}}",
@@ -138,88 +132,18 @@ class SpellModel extends DefaultModel
 
       $values = [];
 
-      $effectList = $this->decodeModel->decodeSpellEffectList($spellData);
-      $classList  = $this->decodeModel->decodeSpellClasses($spellData);
-   
-      if (!$classList) { $classList = ['None' => 0]; } 
-   
-      $minLevel = min($classList);
-      $maxLevel = null;
-   
-      $buffFormula   = $spellData['buffdurationformula'];
-      $buffDuration  = $spellData['buffduration'];
-      $manaCost      = $spellData['mana'];
-      $targetType    = $spellData['targettype'];
-      $resistType    = $spellData['resisttype'];
-      $resistDiff    = $spellData['ResistDiff'];
-      $castTime      = $this->format->formatDurationShort($spellData['cast_time'] / 1000,['fractional' => true]);
-      $recoveryTime  = $this->format->formatDurationShort($spellData['recovery_time'] / 1000,['fractional' => true]);
-      $recastTime    = $this->format->formatDurationShort($spellData['recast_time'] / 1000,['fractional' => true]);
-      
-      $minDuration  = null;
-      $maxDuration  = null;
-      $hasDuration  = ($buffFormula == 0 && $buffDuration == 0) ? false : true;
-      $effectValues = [];
-   
-      $spell->property('buffduration',$buffDuration);
-      $spell->property('buffdurationformula',$buffFormula);
-   
-      // Process duration of spell
-      if (!$hasDuration) { $duration = 'Instant'; }
-      else {
-         $minDuration      = $spell->calculateBuffDurationFormula($minLevel,$buffFormula,$buffDuration);
-         $maxDuration      = null;
-         $maxDurationLevel = $minLevel;
-   
-         for ($checkLevel = $maxServerLevel; $checkLevel >= $minLevel; $checkLevel--) {
-            $checkDuration = $spell->calculateBuffDurationFormula($checkLevel,$buffFormula,$buffDuration);
-            if ($maxDuration && $maxDuration != $checkDuration) { break; }
-            $maxDuration      = $checkDuration;
-            $maxDurationLevel = $checkLevel;
-         }
-         
-         $duration = ($minDuration == $maxDuration) ? 
-            (($minDuration == 0) ? 'Instant' :sprintf("%d ticks (%s)",$minDuration,$this->format->formatDurationShort($minDuration*$tickInSecs))) :
-               sprintf("%s ticks [%s] (L%d) to %s ticks [%s] (L%d)",
-                  $minDuration,$this->format->formatDurationShort($minDuration*$tickInSecs),$minLevel,
-                  $maxDuration,$this->format->formatDurationShort($maxDuration*$tickInSecs),$maxDurationLevel,
-               );
-      }
-   
-      $spellData['hasDuration']    = $hasDuration;
-      $spellData['minDuration']    = $minDuration;
-      $spellData['maxDuration']    = $maxDuration;
-      $spellData['targetTypeName'] = $this->decodeModel->decodeSpellTargetType($targetType);
-   
-      // Process levels for effect data
-      foreach ($effectList as $effectPos => $effectInfo) {
-         $effectId       = $effectInfo['id'];
-         $effectFormula  = $effectInfo['formula'];
-         $effectBase     = $effectInfo['base'];
-         $effectMax      = $effectInfo['max'];
-         $minValue       = $spell->calculateEffectValueFormula($effectFormula,$effectBase,$effectMax,$minLevel,$maxDuration);  
-         $maxValue       = $spell->calculateEffectValueFormula($effectFormula,$effectBase,$effectMax,$maxServerLevel,1);
-   
-         $effectInfo['splurtVal'] = $this->decodeModel->decodeSplurtValues($effectFormula);
-         $effectInfo['minValue']  = $minValue;
-         $effectInfo['maxValue']  = $maxValue;
-   
-         //for ($checkLevel = $minLevel; $checkLevel <= $maxServerLevel; $checkLevel++) {
-         //   $checkValue = $spell->calculateEffectValueFormula($effectFormula,$effectBase,$effectMax,$checkLevel);
-         //   if (($checkValue > 0 && $checkValue >= $maxValue) || ($checkValue < 0 && $checkValue <= $maxValue)) { $maxLevel = $checkLevel; break; }
-         //}
-   
-         for ($checkLevel = $maxServerLevel; $checkLevel >= $minLevel; $checkLevel--) {
-            $checkValue = $spell->calculateEffectValueFormula($effectFormula,$effectBase,$effectMax,$checkLevel);
-            if ($maxValue && $maxValue != $checkValue) { break; }
-            $maxLevel = $checkLevel;
-         }
-   
-         $effectInfo['minLevel'] = $minLevel;
-         $effectInfo['maxLevel'] = $maxLevel;
-   
-         $effectValues[$effectPos] = $effectInfo;
-      }
+      $spellData = $this->processSpellData($spell);
+
+      $effectValues   = $spellData['_effectValues'];
+      $classList      = $spellData['_classList'];
+      $castTime       = $spellData['_castTime'];
+      $recastTime     = $spellData['_recastTime'];
+      $recoveryTime   = $spellData['_recoveryTime'];
+      $duration       = $spellData['_duration'];
+      $targetTypeName = $spellData['_targetTypeName'];
+      $manaCost       = $spellData['mana'];
+      $resistType     = $spellData['resisttype'];
+      $resistDiff     = $spellData['ResistDiff'];
    
       $effectDisplayList = [];
       foreach ($effectValues as $effectPos => $effectInfo) { 
@@ -231,7 +155,7 @@ class SpellModel extends DefaultModel
       $values['RECAST TIME'] = $recastTime ? sprintf("Recast Time: %s",$recastTime) : '';
       $values['RECOVERY TIME'] = $recoveryTime ? sprintf("Recovery Time: %s",$recoveryTime) : '';
       $values['DURATION'] = $duration ? sprintf("Duration: %s",$duration) : '';
-      $values['TARGET'] = sprintf("Target: %s",$spellData['targetTypeName']);
+      $values['TARGET'] = sprintf("Target: %s",$targetTypeName);
       $values['RESIST'] = sprintf("Resist: %s%s",$this->decodeModel->decodeResistType($resistType),$resistDiff ? sprintf(" (%d)",$resistDiff) : '');
       $values['RANGE'] = $spellData['range'] ? sprintf("Range: %s",$spellData['range']) : '';
       $values['AE RANGE'] = $spellData['ae_range'] ? sprintf("AE Range: %s",$spellData['ae_range']) : '';
@@ -480,5 +404,110 @@ class SpellModel extends DefaultModel
       $effectFormat = $this->main->replaceValues($effectFormat,$values) ?: sprintf("Missing: %s/%s",$effectId,$effectName);
 
       return $effectFormat;
+   }
+
+   public function processSpellData($spell)
+   {
+      $return = [];
+
+      if (!$spell) { return $return; }
+
+      $spellData = $spell->data;
+
+      $maxServerLevel = 65;
+      $tickInSecs     = 6;
+
+      $effectList = $this->decodeModel->decodeSpellEffectList($spellData);
+      $classList  = $this->decodeModel->decodeSpellClasses($spellData);
+   
+      if (!$classList) { $classList = ['None' => 0]; } 
+   
+      $minLevel = min($classList);
+      $maxLevel = null;
+   
+      $buffFormula   = $spellData['buffdurationformula'];
+      $buffDuration  = $spellData['buffduration'];
+      $targetType    = $spellData['targettype'];
+      $castTime      = $this->format->formatDurationShort($spellData['cast_time'] / 1000,['fractional' => true]);
+      $recoveryTime  = $this->format->formatDurationShort($spellData['recovery_time'] / 1000,['fractional' => true]);
+      $recastTime    = $this->format->formatDurationShort($spellData['recast_time'] / 1000,['fractional' => true]);
+      
+      $minDuration  = null;
+      $maxDuration  = null;
+      $hasDuration  = ($buffFormula == 0 && $buffDuration == 0) ? false : true;
+      $effectValues = [];
+   
+      $spell->property('buffduration',$buffDuration);
+      $spell->property('buffdurationformula',$buffFormula);
+   
+      // Process duration of spell
+      if (!$hasDuration) { $duration = 'Instant'; }
+      else {
+         $minDuration      = $spell->calculateBuffDurationFormula($minLevel,$buffFormula,$buffDuration);
+         $maxDuration      = null;
+         $maxDurationLevel = $minLevel;
+   
+         for ($checkLevel = $maxServerLevel; $checkLevel >= $minLevel; $checkLevel--) {
+            $checkDuration = $spell->calculateBuffDurationFormula($checkLevel,$buffFormula,$buffDuration);
+            if ($maxDuration && $maxDuration != $checkDuration) { break; }
+            $maxDuration      = $checkDuration;
+            $maxDurationLevel = $checkLevel;
+         }
+         
+         $duration = ($minDuration == $maxDuration) ? 
+            (($minDuration == 0) ? 'Instant' :sprintf("%d ticks (%s)",$minDuration,$this->format->formatDurationShort($minDuration*$tickInSecs))) :
+               sprintf("%s ticks [%s] (L%d) to %s ticks [%s] (L%d)",
+                  $minDuration,$this->format->formatDurationShort($minDuration*$tickInSecs),$minLevel,
+                  $maxDuration,$this->format->formatDurationShort($maxDuration*$tickInSecs),$maxDurationLevel,
+               );
+      }
+   
+      // Process levels for effect data
+      foreach ($effectList as $effectPos => $effectInfo) {
+         $effectId       = $effectInfo['id'];
+         $effectFormula  = $effectInfo['formula'];
+         $effectBase     = $effectInfo['base'];
+         $effectMax      = $effectInfo['max'];
+         $minValue       = $spell->calculateEffectValueFormula($effectFormula,$effectBase,$effectMax,$minLevel,$maxDuration);  
+         $maxValue       = $spell->calculateEffectValueFormula($effectFormula,$effectBase,$effectMax,$maxServerLevel,1);
+   
+         $effectInfo['splurtVal'] = $this->decodeModel->decodeSplurtValues($effectFormula);
+         $effectInfo['minValue']  = $minValue;
+         $effectInfo['maxValue']  = $maxValue;
+   
+         //for ($checkLevel = $minLevel; $checkLevel <= $maxServerLevel; $checkLevel++) {
+         //   $checkValue = $spell->calculateEffectValueFormula($effectFormula,$effectBase,$effectMax,$checkLevel);
+         //   if (($checkValue > 0 && $checkValue >= $maxValue) || ($checkValue < 0 && $checkValue <= $maxValue)) { $maxLevel = $checkLevel; break; }
+         //}
+   
+         for ($checkLevel = $maxServerLevel; $checkLevel >= $minLevel; $checkLevel--) {
+            $checkValue = $spell->calculateEffectValueFormula($effectFormula,$effectBase,$effectMax,$checkLevel);
+            if ($maxValue && $maxValue != $checkValue) { break; }
+            $maxLevel = $checkLevel;
+         }
+   
+         $effectInfo['minLevel'] = $minLevel;
+         $effectInfo['maxLevel'] = $maxLevel;
+   
+         $effectValues[$effectPos] = $effectInfo;
+      }
+
+      $spellData['_effectList']     = $effectList;
+      $spellData['_effectValues']   = $effectValues;
+      $spellData['_classList']      = $classList;
+      $spellData['_minLevel']       = $minLevel;
+      $spellData['_maxLevel']       = $maxLevel;
+      $spellData['_duration']       = $duration;
+      $spellData['_castTime']       = $castTime;
+      $spellData['_recastTime']     = $recastTime;
+      $spellData['_recoveryTime']   = $recoveryTime;
+      $spellData['_minDuration']    = $minDuration;
+      $spellData['_maxDuration']    = $maxDuration;
+      $spellData['_hasDuration']    = $hasDuration;
+      $spellData['_maxServerLevel'] = $maxServerLevel;
+      $spellData['_tickInSecs']     = $tickInSecs;
+      $spellData['_targetTypeName'] = $this->decodeModel->decodeSpellTargetType($targetType);
+      
+      return $spellData;
    }
 }

@@ -997,7 +997,7 @@ class DecodeModel extends DefaultModel
          ],
          '128' => [
             'name' => 'SE_IncreaseSpellDuration',
-            'text' => 'foo'
+            'display' => ['format' => 1, 'label' => 'Spell Duration', 'values' => ['effect:units' => 'raw^%']],
          ],
          '129' => [
             'name' => 'SE_IncreaseRange',
@@ -1454,6 +1454,20 @@ class DecodeModel extends DefaultModel
       }
    
       return (($types) ? implode('/',$types) : 'None');
+   }
+
+   public function decodeBardType($bardTypeId)
+   {
+      $valueList = [
+         '23' => 'Wind Instruments',
+         '24' => 'Stringed Instruments',
+         '25' => 'Brass Instruments',
+         '26' => 'Percussion Instruments',
+         '50' => 'Singing',
+         '51' => 'All Instruments'
+      ];
+
+      return $valueList[$bardTypeId] ?: null;
    }
 
    public function decodeBlindnessStackingValue($effectValue)
