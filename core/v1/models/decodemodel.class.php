@@ -1205,9 +1205,9 @@ class DecodeModel extends DefaultModel
             'text' => 'foo'
          ],
          '147' => [
-            'name'  => 'SE_PercentalHeal',
-            'label' => 'Percent Heal',
-            'text'  => 'foo'
+            'name'    => 'SE_PercentalHeal',
+            'label'   => 'Percent Heal',
+            'display' => ['format' => 19, 'label' => 'Hitpoints', 'values' => ['effect:units' => 'raw^hitpoints']],
          ],
          '148' => [
             'name' => 'SE_StackingCommandBlock',
