@@ -158,6 +158,11 @@ class SpellModel extends DefaultModel
       foreach ($effectValues as $effectPos => $effectInfo) { 
          $effectDisplayList[$effectPos] = sprintf(" %2d: %s",$effectPos,$this->createFormattedSpellEffectText($spellData,$effectInfo));
       }
+
+      $skillName = $this->decodeModel->decodeSkill($spellData['skill']) ?? null;
+      
+      // Spells are _not_ skills involving Tiger Claw.  Remove this nonsense database value.
+      if ($skillName == 'TigerClaw') { $skillName = 'Activated'; }
    
       $values['MANA COST'] = $manaCost ? sprintf("Mana Cost: %s",$manaCost) : '';
       $values['CAST TIME'] = sprintf("Cast Time: %s",$castTime);
@@ -171,7 +176,7 @@ class SpellModel extends DefaultModel
       $values['CAST ON YOU'] = $spellData['cast_on_you'] ? sprintf("On you: %s",$spellData['cast_on_you']) : '';
       $values['CAST ON OTHER'] = $spellData['cast_on_other'] ? sprintf("On others: Target %s",$spellData['cast_on_other']) : '';
       $values['CLASSES'] = $classList ? sprintf("Classes: %s",implode(' ', array_map(function ($key, $value) { return (($value == 254) ? $key : sprintf('%s(%s)',$key,$value)); }, array_keys($classList), $classList))) : '';
-      $values['SKILL'] = sprintf("Skill: %s",preg_replace('/([a-z])([A-Z])/','$1 $2',$this->decodeModel->decodeSkill($spellData['skill'])));
+      $values['SKILL'] = $skillName ? sprintf("Skill: %s",preg_replace('/([a-z])([A-Z])/','$1 $2',$skillName)) : '';
 
       $return = [];
 
@@ -215,6 +220,7 @@ class SpellModel extends DefaultModel
       $effectName     = $effectInfo['effectName'];
       $textFormat     = $effectDisplay['format'] ?: 0;
       $textLabel      = $effectDisplay['label'];
+      $textQualifier  = $effectDisplay['qualifier'] ?: '';
       $textValues     = $effectDisplay['values'] ?: [];
       $allowDuration  = $effectDisplay['allowDuration'] ? true : false;
       $reverseAdjust  = $effectDisplay['reverseAdjust'] ? true : false;
@@ -227,6 +233,7 @@ class SpellModel extends DefaultModel
       $values = array_merge($values,[
          'effect:id'        => $effectId,
          'effect:label'     => $textLabel,
+         'effect:qualifier' => $textQualifier,
          'effect:formula'   => $effectInfo['formula'],
          'effect:base'      => $effectInfo['base'],
          'effect:max'       => $effectInfo['max'],
@@ -283,7 +290,7 @@ class SpellModel extends DefaultModel
                if ($splurtVal) { $effectFormat .= " and {{effect:splurtLabel}} {{effect:splurtVal}} per tick, ending at {{effect:maxValue}}"; }
                else            { $effectFormat .= " (L{{effect:minLevel}}) to {{effect:maxValue}}{{effect:units}} (L{{effect:maxLevel}})"; }
             }
-            if ($hasDuration && $allowDuration) { $effectFormat .= ' per tick'; }
+            if (($hasDuration && $allowDuration) || $effectDisplay['forceDuration']) { $effectFormat .= ' per tick'; }
 
             break;
          }
@@ -393,11 +400,20 @@ class SpellModel extends DefaultModel
          }
          // Summoned Pets
          case 11: {
-            $petInfo = $this->dataModel->getPetInfoBySpellId($spellId);
+            $petInfo = $this->dataModel->getPetInfoBySpellId($spellId) ?: [];
 
             foreach ($petInfo as $petKey => $petValue) { $values["pet:$petKey"] = $petValue; }
 
-            $effectFormat .= "{{effect:label}}: L{{pet:level}} {{pet:name}}";
+            if ($effectDisplay['temporary']) {
+               $petCount    = ($values['effect:base'] > 1) ? sprintf(" x%d",$values['effect:base']) : '';
+               $petDuration = ($values['effect:max'] > 0) ? sprintf(" (%s)",$this->format->formatDurationShort($values['effect:max'])) : '';
+            }
+            else {
+               $petCount     = '';
+               $petDuration  = '';
+            }
+
+            $effectFormat .= sprintf("{{effect:label}}: L{{pet:level}} {{pet:name}}%s%s",$petCount,$petDuration);
 
             break;
          }
@@ -432,6 +448,49 @@ class SpellModel extends DefaultModel
             $values['effect:limit'] = ($values['limit']) ? sprintf(" (%s%s)",$values['limit'],$values['units'] ?? '') : '';
 
             $effectFormat .= "Limit: {{effect:limitadjust}}{{effect:label}}{{effect:limit}}";
+            break;
+         }
+         // Generic label qualifier value
+         // Supports:  LABEL QUALIFIER VALUE | LABEL QUALIFIER VALUE UNITS | LABEL/SEPARATOR QUALIFIER VALUE  | LABEL/SEPARATOR VALUE
+         case 15: {
+            $adjust       = ($effectDisplay['adjust']) ? sprintf("%s ",$values['effect:adjust']) : '';
+            $addSeparator = $effectDisplay['separator'] ?? '';
+            $qualifier    = ($values['effect:qualifier']) ? sprintf(' %s ',$values['effect:qualifier']) : '';
+            $effectFormat .= sprintf("%s{{effect:label}}%s%s{{effect:value}}{{effect:units}}",$adjust,$addSeparator,$qualifier);
+            break;
+         }
+         // Growth requires percent of 100 AND fixed value
+         case 16: {
+            $percentChange = ($values['effect:base']) ? ($values['effect:base'] - 100) : null;
+            $fixedValue    = ($values['effect:limit']) ? $values['effect:limit'] : null;
+
+            if ($fixedValue) {
+               $effectFormat .= sprintf("Change {{effect:label}} to %s",$fixedValue);
+            }
+            else {
+               $adjustLabel = ($values['effect:base'] > 100) ? 'Increase' : 'Decrease';
+               $effectFormat .= sprintf("%s {{effect:label}} by %s%%",$adjustLabel,abs($percentChange));
+            }    
+            break;
+         }
+         // Add proc effect
+         case 17: {
+            $spellProc     = $this->getSpellById($values['effect:base']) ?: null;
+            $spellProcName = $spellProc->property('name') ?: sprintf("Unknown (%d)",$values['effect:base']);
+            $rateModifier  = isset($values['effect:limit']) ? $values['effect:limit'] : null;
+            $rateLabel     = (!is_null($rateModifier)) ? sprintf(" (Modifier: %d)",$rateModifier) : '';
+            $effectFormat .= sprintf("{{effect:label}}: %s%s",$spellProcName,$rateLabel);
+            break;
+         }
+         // Summon Mount
+         case 18: {
+            $mountInfo  = $this->dataModel->getHorseInfoBySpellId($spellId) ?: [];
+            $summonItem = ($mountInfo['notes']) ? sprintf(" from %s",$mountInfo['notes']) : '';
+
+            foreach ($mountInfo as $mountKey => $mountValue) { $values["mount:$mountKey"] = $mountValue; }
+
+            $effectFormat .= "{{effect:label}}: {{mount:type}} (Speed: +{{mount:mountspeed}}%)";
+
             break;
          }
 
