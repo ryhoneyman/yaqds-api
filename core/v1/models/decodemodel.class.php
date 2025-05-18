@@ -896,12 +896,12 @@ class DecodeModel extends DefaultModel
          '84' => [
             'name'    => 'SE_TossUp',
             'label'   => 'Gravity Flux',
-            'text' => 'foo'
+            'display' => ['format' => 15, 'label' => 'Toss Into Air', 'qualifier' => 'upward', 'values' => ['effect:value' => 'raw^abs:{{effect:base}}', 'effect:units' => 'raw^ units']],
          ],
          '85' => [
             'name'    => 'SE_WeaponProc',
             'label'   => 'Weapon Proc',
-            'text' => 'foo'
+            'display' => ['format' => 17, 'label' => 'Add Melee Proc'],
          ],
          '86' => [
             'name'    => 'SE_Harmony',
@@ -921,7 +921,12 @@ class DecodeModel extends DefaultModel
          '89' => [
             'name'    => 'SE_ModelSize',
             'label'   => 'Model Size',
-            'text' => 'foo'
+            'display' => ['format' => 16, 'label' => 'Target Size'],
+         ],
+         '90' => [
+            'name'    => 'SE_Cloak',
+            'label'   => 'Ignore Pet',
+            'display' => ['format' => 0, 'label' => 'Ignore Pet'],
          ],
          '91' => [
             'name'    => 'SE_SummonCorpse',
@@ -931,7 +936,7 @@ class DecodeModel extends DefaultModel
          '92' => [
             'name'    => 'SE_InstantHate',
             'label'   => 'Add Hate',
-            'text' => 'foo'
+            'display' => ['format' => 1, 'label' => 'Hate']
          ],
          '93' => [
             'name'    => 'SE_StopRain',
@@ -977,7 +982,7 @@ class DecodeModel extends DefaultModel
          '100' => [
             'name'    => 'SE_HealOverTime',
             'label'   => 'Heal Over Time',
-            'text' => 'foo'
+            'display' => ['format' => 1, 'label' => 'Hitpoints', 'forceDuration' => true],
          ],
          '101' => [
             'name'    => 'SE_CompleteHeal',
@@ -1022,7 +1027,12 @@ class DecodeModel extends DefaultModel
          '109' => [
             'name'    => 'SE_SummonItemIntoBag',
             'label'   => 'Summon Item Into Bag',
-            'text' => 'foo'
+            'display' => [
+               'format' => 'Summon Item in Bag: {{itemName}}',
+               'values' => [
+                  'itemName' => 'data^getItemInfoById^{{effect:base}}^Name',
+               ],
+            ],
          ],
          '110' => [
             'name'    => 'SE_IncreaseArchery',
@@ -1042,12 +1052,12 @@ class DecodeModel extends DefaultModel
          '113' => [
             'name'    => 'SE_SummonHorse',
             'label'   => 'Summon Horse',
-            'text' => 'foo'
+            'display' => ['format' => 18, 'label' => 'Summon Mount'],
          ],
          '114' => [
             'name'    => 'SE_ChangeAggro',
             'label'   => 'Add Hate Over Time',
-            'text' => 'foo'
+            'display' => ['format' => 15, 'label' => 'Hate Multiplier', 'adjust' => true, 'qualifier' => 'by', 'values' => ['effect:value' => 'raw^{{effect:base}}', 'effect:units' => 'raw^%']],
          ],
          '115' => [
             'name'    => 'SE_Hunger',
@@ -1082,7 +1092,7 @@ class DecodeModel extends DefaultModel
          '121' => [
             'name'    => 'SE_ReverseDS',
             'label'   => 'Reverse Damage Shield',
-            'text' => 'foo'
+            'display' => ['format' => 15, 'label' => 'Reverse Damage Shield', 'qualifier' => 'heals for', 'values' => ['effect:value' => 'raw^abs:{{effect:base}}']],
          ],
          '123' => [
             'name'    => 'SE_Screech',
@@ -1097,7 +1107,7 @@ class DecodeModel extends DefaultModel
          '125' => [
             'name'    => 'SE_ImprovedHeal',
             'label'   => 'Improved Healing',
-            'text' => 'foo'
+            'display' => ['format' => 15, 'label' => 'Healing', 'adjust' => true, 'qualifier' => 'by', 'values' => ['effect:value' => 'raw^{{effect:base}}', 'effect:units' => 'raw^%']],
          ],
          '126' => [
             'name' => 'SE_SpellResistReduction', 
@@ -1122,12 +1132,12 @@ class DecodeModel extends DefaultModel
          '130' => [
             'name' => 'SE_SpellHateMod', 
             'label'   => 'Spell Hate', 
-            'text' => 'foo'
+            'display' => ['format' => 15, 'label' => 'Spell Hate Multiplier', 'adjust' => true, 'qualifier' => 'by', 'values' => ['effect:value' => 'raw^abs:{{effect:base}}', 'effect:units' => 'raw^%']],
          ],
          '131' => [
             'name' => 'SE_ReduceReagentCost', 
             'label'   => 'Reagent Cost', 
-            'text' => 'foo'
+            'display' => ['format' => 15, 'label' => 'Change of Using Reagent', 'adjust' => true, 'reverseAdjust' => true, 'qualifier' => 'by', 'values' => ['effect:value' => 'raw^{{effect:base}}', 'effect:units' => 'raw^%']],
          ],
          '132' => [
             'name' => 'SE_ReduceManaCost', 
@@ -1179,6 +1189,11 @@ class DecodeModel extends DefaultModel
             'label'   => 'Limit: Instant Spells',
             'display' => ['format' => 14, 'label' => 'Instant Spells', 'map' => ['0' => 'Exclude ', '1' => 'Include '], 'values' => ['mapValue' => 'map^{{effect:base}}', 'effect:limitadjust' => 'values^mapValue']],
          ],
+         '142' => [
+            'name' => 'SE_LimitMinLevel',
+            'label'   => 'Limit: Min Spell Level',
+            'display' => ['format' => 14, 'label' => 'Min Spell Level', 'values' => ['limit' => 'raw^{{effect:base}}']],
+         ],
          '143' => [
             'name' => 'SE_LimitCastTimeMin',
             'label'   => 'Limit: Min Cast Time',
@@ -1215,43 +1230,48 @@ class DecodeModel extends DefaultModel
             'display' => ['format' => 0, 'label' => 'Suspend Pet'],
          ],
          '152' => [
-            'name' => 'SE_TemporaryPets',
+            'name'    => 'SE_TemporaryPets',
             'label'   => 'Swarm Pet',
-            'text' => 'foo'
+            'display' => ['format' => 11, 'temporary' => true, 'label' => 'Summon Swarm Pet'],
          ],
          '153' => [
-            'name' => 'SE_BalanceHP',
+            'name'    => 'SE_BalanceHP',
             'label'   => 'Balance HP',
             'text' => 'foo'
          ],
          '154' => [
-            'name' => 'SE_DispelDetrimental',
+            'name'    => 'SE_DispelDetrimental',
             'label'   => 'Dispel Detrimental',
             'text' => 'foo'
          ],
          '155' => [
-            'name' => 'SE_SpellCritDmgIncrease',
+            'name'    => 'SE_SpellCritDmgIncrease',
             'label'   => 'Increase Spell Crit Direct Damage',
             'text' => 'foo'
          ],
          '156' => [
-            'name' => 'SE_IllusionCopy',
+            'name'    => 'SE_IllusionCopy',
             'label'   => 'Target\'s Target Illusion',
             'text' => 'foo'
          ],
          '157' => [
-            'name' => 'SE_SpellDamageShield',
+            'name'    => 'SE_SpellDamageShield',
             'label'   => 'Spell DS',
             'text' => 'foo'
          ],
          '158' => [
-            'name' => 'SE_Reflect',
+            'name'    => 'SE_Reflect',
             'label'   => 'Reflect Spell',
             'text' => 'foo'
          ],
          '159' => [
             'name' => 'SE_AllStats',
             'label'   => 'Increase All Stats Cap',
+            'text' => 'foo'
+         ],
+         '160' => [
+            'name' => 'SE_MakeDrunk',
+            'label'   => 'Mitigate Spell Damage by %',
             'text' => 'foo'
          ],
          '161' => [
@@ -1372,10 +1392,35 @@ class DecodeModel extends DefaultModel
             'label'   => 'Increase Min Damage with Skill',
             'text' => 'foo'
          ],
+         '201' => [
+            'name'    => 'SE_RangedProc',
+            'label'   => 'Ranged Proc',
+            'display' => ['format' => 17, 'label' => 'Add Ranged Proc'],
+         ],
          '254' => [
             'name' => 'SE_Blank',
             'label'   => 'Blank',
             'text' => 'foo'
+         ],
+         '323' => [
+            'name'    => 'SE_DefensiveProc',
+            'label'   => 'Defensive Proc',
+            'display' => ['format' => 17, 'label' => 'Add Defensive Proc'],
+         ],
+         '419' => [
+            'name'    => 'SE_AddMeleeProc',
+            'label'   => 'Melee Proc v2',
+            'display' => ['format' => 17, 'label' => 'Add Melee Proc v2'],
+         ],
+         '427' => [
+            'name'    => 'SE_SkillProc',
+            'label'   => 'Skill Attempt Proc',
+            'display' => ['format' => 17, 'label' => 'Add Skill Attempt Proc'],
+         ],
+         '429' => [
+            'name'    => 'SE_SkillProcSuccess',
+            'label'   => 'Skill Success Proc',
+            'display' => ['format' => 17, 'label' => 'Add Skill Success Proc'],
          ],
       ];
 
