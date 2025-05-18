@@ -493,6 +493,12 @@ class SpellModel extends DefaultModel
 
             break;
          }
+         // Percentage up to max
+         case 19: {
+            $maximum = ($values['effect:max']) ? sprintf(" up to %s {{effect:units}}",$values['effect:max']) : '';
+            $effectFormat .= sprintf("{{effect:adjust}} {{effect:label}} by {{effect:base}}%%%s",$maximum);
+            break;
+         }
 
          // Custom format or generic label only
          default: $effectFormat .= ($textFormat) ? $textFormat : "{{effect:label}}";
