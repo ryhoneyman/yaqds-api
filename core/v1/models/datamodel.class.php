@@ -10,6 +10,123 @@ class DataModel extends DefaultModel
       parent::__construct($debug,$main,$options);
    }
 
+   public function getHorseInfoBySpellId($spellId)
+   {
+      if ($this->main->connectDatabase($this->dbName) === false) { $this->error('database not available: '.$this->main->error()); return false; }
+
+      // None of the horse data in the database is consistent, so we need to do some work to get the correct name
+      $mountDescriptions = [
+         'Chimera'        => 'Chimera',
+         'Cragslither1'   => 'Crimson Cragslither',
+         'Cragslither2'   => 'Viridian Cragslither',
+         'Cragslither3'   => 'Plagued Cragslither',
+         'HorseBl'        => 'Black Horse',
+         'HorseBr'        => 'Brown Horse',
+         'HorseTa'        => 'Tan Horse',
+         'HorseWh'        => 'White Horse',
+         'Kiriin0'        => 'Mystical Kirin',
+         'Kiriin2'        => 'Cursed Kirin',
+         'LizardBlk'      => 'Black Lizard',
+         'LizardGrn'      => 'Green Lizard',
+         'LizardRed'      => 'Red Lizard',
+         'LizardWht'      => 'White Lizard',
+         'Nightmare'      => 'Nightmare',
+         'Puma1'          => 'Shadow Panther',
+         'Puma3'          => 'Snow Leopard',
+         'Roboboar'       => 'Roboboar',
+         'Unicorn'        => 'Unicorn',
+         'WarHorseBl'     => 'Black War Horse',
+         'WarHorseBr'     => 'Brown War Horse',
+         'WarHorseTa'     => 'Tan War Horse',
+         'WarHorseWh'     => 'White War Horse',
+         'Worg'           => 'Worg',
+         'Sokokar1'       => 'Emerald Sokokar',
+         'Sokokar2'       => 'Bloodied Sokokar',
+         'Sokokar3'       => 'Corrupted Sokokar',
+         'Sokokar4'       => 'Sokokar',
+         'Sokokar5'       => 'Flying Imperial Sokokar',
+         'Feran1'         => 'Commanded Feran',
+         'Feran2'         => 'Ferocious Feran',
+         'HydraBlk'       => 'Onyx Hydra',
+         'HydraGrn'       => 'Jade Hydra',
+         'Spider1'        => 'Skittering',
+         'Spider2'        => 'Wiring',
+         'Bear1'          => 'Bear',
+         'Bear2'          => 'War Bear',
+         'Wrulon1'        => 'Wrulon Guardian',
+         'Wrulon2'        => 'Wrulon Protector',
+         'Wrulon3'        => 'Wrulon Warder',
+         'LionBrown'      => 'Highland Lion',
+         'LionWhite'      => 'King Kalakor',
+         'ShinyRoboboar'  => 'Shiny New Class V Collapsable Roboboar',
+         'CliknarBlack'   => 'Prime Cliknar',
+         'CliknarRaid'    => 'Queens Prime Minion',
+         'CliknarRed'     => 'Strong Captured Cliknar',
+         'HobbyHorse'     => 'Hobby Horse',
+         'TigerWhite'     => 'White Tiger of the Alabaster Jungle',
+         'MBXm6'          => 'Festive Braxi',
+         'MBLm0'          => 'Ognits Mini Dirigible Device',
+         'MBLm1'          => 'Veilbreaker Escape Module',
+         'MGLm0'          => 'Goral Stalker',
+         'MKGm1'          => 'Forest Kangon',
+         'MKGm2'          => 'Desert Kangon',
+         'MPGm0'          => 'Pegasus',
+         'MPGm2'          => 'Battle Armored Pegasus',
+         'MPGm3'          => 'Onyx Skystrider',
+         'MPGm4'          => 'Parade Armored Onyx Skystrider',
+         'MPGm6'          => 'Dreadmare',
+         'MPGm7'          => 'Blazing Skystrider',
+         'MPGm9'          => 'Mechanical Skystrider',
+         'MPGm10'         => 'Celestial Skystrider',
+         'MPGm11'         => 'Dragonscale Skystrider',
+         'MPUm4'          => 'Armored Snow Puma',
+         'MPUm5'          => 'Plains Puma',
+         'MPUm6'          => 'Forest Jaguar',
+         'MPUm7'          => 'Grassland Tiger',
+         'MRDm0'          => 'Charred Rotdog',
+         'MRDm1'          => 'Fleshless Rotdog',
+         'MRDm2'          => 'Albino Rotdog',
+         'MRKm0'          => 'Anizoks Steam Escalator',
+         'MRPm0'          => 'Venemous Raptor',
+         'MRPm1'          => 'Tiger Raptor',
+         'MSDm0'          => 'Sessiloid',
+         'MSDm3'          => 'Armored Sessiloid',
+         'MSLm0'          => 'Verdant Selyrah Whistle',
+         'MSLm5'          => 'Prismatic Selyrah',
+         'MTAm2'          => 'Desert Tarantula',
+         'MTLm0'          => 'Verdant Hedgerow Leaf',
+         'MTLm1'          => 'Dessicated Hedgerow Leaf',
+         'MWMm0'          => 'Shadow Wurm',
+         'MWMm1'          => 'Ember Wurm',
+         'MWMm2'          => 'Golden Wurm',
+         'MWMm3'          => 'Nature Touched Wurm',
+         'MWMm4'          => 'Frost Wurm',
+         'MWRm1'          => 'Firescale Wrulon',
+         'UNMm5'          => 'Armored Planar Ardennes',
+         'UNMm6'          => 'Armored Royal Ardennes',
+         'UNMm7'          => 'Armored Royal Shire',
+         'UNMm8'          => 'Armored Battle Shire',
+         'UNMm9'          => 'Balebris Horse',
+         'UNMm10'         => 'Dallyns Horse',
+         'UNMm11'         => 'Meleens Horse',
+         'UNMm13'         => 'Tahkas Horse',
+      ];
+
+      $horseInfo = $this->main->db($this->dbName)->bindQuery("SELECT h.filename as name,r.name as racename,h.mountspeed,h.notes FROM spells_new sn LEFT JOIN horses h ON sn.teleport_zone = h.filename ". 
+                                      "LEFT JOIN races r ON r.id = h.race WHERE sn.id = ?",'i',[$spellId],['single' => true]);                        
+
+      if (preg_match('/^invalid$/i',$horseInfo['racename'])) { $horseInfo['racename'] = ''; }
+
+      $baseName = preg_replace('/^sum(\S+?)(fast|run1|run2|slow1|slow2.*)?$/i','$1',$horseInfo['name']);
+
+      $horseInfo['type'] = $mountDescriptions[$baseName] ?? $horseInfo['racename'];
+
+      if ($horseInfo['mountspeed']) { $horseInfo['mountspeed'] *= 100; }
+      if ($horseInfo['notes'] && preg_match('/^none$/i',$horseInfo['notes'])) { $horseInfo['notes'] = null; }
+
+      return $horseInfo;
+   }
+
    public function getPetInfoBySpellId($spellId)
    {
       if ($this->main->connectDatabase($this->dbName) === false) { $this->error('database not available: '.$this->main->error()); return false; }
