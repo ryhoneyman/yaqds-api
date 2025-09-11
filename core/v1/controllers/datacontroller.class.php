@@ -68,7 +68,8 @@ class DataController extends DefaultController
 
       if (!$this->raiseDatabase($dbName)) { return $this->standardError("Could not connect to database $dbName"); }
 
-      $db       = $this->main->db($dbName);
+      $db = $this->main->db($dbName);
+
       $dbResult = $db->bindQuery($statement,$types,$data,array('index' => $useIndex, 'single' => $singleReturn));
 
       //$this->main->debug->writeFile('datacontroller.debug.log',json_encode([$dbResult,$statement,$types,$data,$useIndex,$singleReturn]),false);
