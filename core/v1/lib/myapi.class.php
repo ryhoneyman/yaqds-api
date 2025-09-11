@@ -87,6 +87,7 @@ class MyAPI extends LWPLib\APIBase
     */
    public function v1DataProviderBindQuery($database, $statement, $types = null, $data = null, $options = null)
    {
+      $index  = $options['index'] ?: null;
       $single = $options['single'] ?: false;
 
       $request = array(
@@ -95,6 +96,7 @@ class MyAPI extends LWPLib\APIBase
             'statement' => $statement, 
             'types'     => $types,
             'data'      => $data,
+            'index'     => $index,
             'single'    => $single
          ),
          'options' => array(
