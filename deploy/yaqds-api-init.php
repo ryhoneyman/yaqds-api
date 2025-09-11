@@ -9,6 +9,7 @@ define('V1_WEBDIR',V1_BASEDIR.'/www');
 define('V1_CONFIGDIR',V1_BASEDIR.'/etc');        // v1 static configurations
 define('V1_TOKENDIR',APP_BASEDIR.'/tokens/v1');  // v1 cached tokens
 define('V1_LOGDIR',APP_BASEDIR.'/log/v1');       // v1 logs
+define('V1_CACHEDIR',APP_BASEDIR.'/cache/v1');   // v1 cache
 
 set_include_path(get_include_path().PATH_SEPARATOR.V1_LIBDIR.PATH_SEPARATOR.APP_LWPLIBDIR);
 
