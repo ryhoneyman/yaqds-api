@@ -1,0 +1,27 @@
+{
+   "/map": {
+      "GET": {
+         "name": "Get All Maps",
+         "description": "",
+         "controller": "MapController",
+         "function": "getMapList",
+         "category": "Map",
+         "filter": {},
+         "param": {}
+      }
+   },
+   "/map/{name}": {
+      "GET": {
+         "name": "Load Map Data",
+         "description": "",
+         "controller": "MapController",
+         "function": "renderMapv1",
+         "category": "Map",
+         "filter": {
+            "name": { "required": true, "constraint": "string", "description": "Name for gathering map information." }
+         },
+         "param": {
+         }
+      }
+   }
+}
