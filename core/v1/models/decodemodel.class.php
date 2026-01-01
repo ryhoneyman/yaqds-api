@@ -871,7 +871,7 @@ class DecodeModel extends DefaultModel
          '78' => [
             'name'    => 'SE_AbsorbMagicAttack',
             'label'   => 'Absorb Spell Damage',
-            'text' => 'foo'
+            'display' => ['format' => 1, 'label' => 'Absorb Magic Damage'],
          ],
          '79' => [
             'name'    => 'SE_CurrentHPOnce',
@@ -945,8 +945,8 @@ class DecodeModel extends DefaultModel
          ],
          '94' => [
             'name'    => 'SE_NegateIfCombat',
-            'label'   => 'Negate if Combat', 
-            'text' => 'foo'
+            'label'   => 'Negate If Combat', 
+            'display' => ['format' => 0, 'label' => 'Removed if Player Attacks or Casts']
          ],
          '95' => [
             'name'    => 'SE_Sacrifice',
@@ -987,7 +987,7 @@ class DecodeModel extends DefaultModel
          '101' => [
             'name'    => 'SE_CompleteHeal',
             'label'   => 'Complete Heal',
-            'text' => 'foo'
+            'display' => ['format' => 0, 'label' => 'Complete Heal With Recast Blocker'],
          ],
          '102' => [
             'name'    => 'SE_Fearless',
@@ -1017,7 +1017,7 @@ class DecodeModel extends DefaultModel
          '107' => [
             'name'    => 'SE_AlterNPCLevel',
             'label'   => 'Scale Level',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '108' => [
             'name'    => 'SE_Familiar',
@@ -1037,7 +1037,7 @@ class DecodeModel extends DefaultModel
          '110' => [
             'name'    => 'SE_IncreaseArchery',
             'label'   => 'Increase Archery', 
-            'text' => 'foo'
+            'display' => ['format' => 0, 'label' => 'Increase Archery'],
          ],
          '111' => [
             'name'    => 'SE_ResistAll',
@@ -1062,7 +1062,7 @@ class DecodeModel extends DefaultModel
          '115' => [
             'name'    => 'SE_Hunger',
             'label'   => 'Hunger',
-            'text' => 'foo'
+            'display' => ['format' => 0, 'label' => 'Reset Hunger/Thirst'],
          ],
          '116' => [
             'name'    => 'SE_CurseCounter',
@@ -1072,22 +1072,22 @@ class DecodeModel extends DefaultModel
          '117' => [
             'name'    => 'SE_MagicWeapon',
             'label'   => 'Magic Weapon', 
-            'text' => 'foo'
+            'display' => ['format' => 0, 'label' => 'Make Weapons Magical'],
          ],
          '118' => [
             'name'    => 'SE_Amplification',
             'label'   => 'Increase Singing Skill',
-            'text' => 'foo'
+            'display' => ['format' => 19, 'label' => 'Singing Skill', 'qualifier' => '%'],
          ],
          '119' => [
             'name'    => 'SE_AttackSpeed3',
             'label'   => 'Haste v3',
-            'text' => 'foo'
+            'display' => ['format' => 19, 'label' => 'Attack Speed Overhaste'],
          ],
          '120' => [
             'name'    => 'SE_HealRate',
             'label'   => 'Increase Regen Cap',
-            'text' => 'foo'
+            'display' => ['format' => 19, 'label' => 'Healing Effectiveness'],
          ],
          '121' => [
             'name'    => 'SE_ReverseDS',
@@ -1096,8 +1096,8 @@ class DecodeModel extends DefaultModel
          ],
          '123' => [
             'name'    => 'SE_Screech',
-            'label'   => 'Interrupt Casting',
-            'text' => 'foo'
+            'label'   => 'Screech Stacking',
+            'display' => ['format' => 20],
          ],
          '124' => [
             'name'    => 'SE_ImprovedDamage',
@@ -1112,7 +1112,7 @@ class DecodeModel extends DefaultModel
          '126' => [
             'name' => 'SE_SpellResistReduction', 
             'label'   => 'Spell Resist Reduction', 
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '127' => [
             'name' => 'SE_IncreaseSpellHaste',
@@ -1147,7 +1147,7 @@ class DecodeModel extends DefaultModel
          '133' => [
             'name' => 'SE_RFcStunTimeMod',
             'label'   => 'Reduce Fizzle Time',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '134' => [
             'name' => 'SE_LimitMaxLevel',
@@ -1202,7 +1202,7 @@ class DecodeModel extends DefaultModel
          '145' => [
             'name'    => 'SE_Teleport2',
             'label'   => 'Teleport To Zone Coords',
-            'text' => 'foo'
+            'display' => ['format' => 5, 'label' => 'Banish'],
          ],
          '147' => [
             'name'    => 'SE_PercentalHeal',
@@ -1222,7 +1222,7 @@ class DecodeModel extends DefaultModel
          '150' => [
             'name' => 'SE_DeathSave',
             'label'   => 'Death Save',
-            'text' => 'foo'
+            'display' => ['format' => 21, 'values' => ['triggerPercent' => 'raw^16']],
          ],
          '151' => [
             'name'    => 'SE_SuspendPet',
@@ -1237,62 +1237,71 @@ class DecodeModel extends DefaultModel
          '153' => [
             'name'    => 'SE_BalanceHP',
             'label'   => 'Balance HP',
-            'text' => 'foo'
+            'display' => ['format' => 22],
          ],
          '154' => [
             'name'    => 'SE_DispelDetrimental',
             'label'   => 'Dispel Detrimental',
-            'text' => 'foo'
+            'display' => [
+               'format' => 'Dispel Detrimental Buffs ({{chance}}% Chance)',
+               'values' => [
+                  'chance' => 'raw^percent10:{{effect:base}}',
+               ],
+            ],
          ],
          '155' => [
             'name'    => 'SE_SpellCritDmgIncrease',
             'label'   => 'Increase Spell Crit Direct Damage',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '156' => [
             'name'    => 'SE_IllusionCopy',
             'label'   => 'Target\'s Target Illusion',
-            'text' => 'foo'
+            'display' => ['format' => 0, 'label' => 'Illusion: Target'],
          ],
          '157' => [
             'name'    => 'SE_SpellDamageShield',
             'label'   => 'Spell DS',
-            'text' => 'foo'
+            'display' => [
+               'format' => 'Inflict {{effect:base}} Damage on Caster when Hit by Spell',
+            ],
          ],
          '158' => [
             'name'    => 'SE_Reflect',
             'label'   => 'Reflect Spell',
-            'text' => 'foo'
+            'display' => ['format' => 23],
          ],
          '159' => [
             'name' => 'SE_AllStats',
             'label'   => 'Increase All Stats Cap',
-            'text' => 'foo'
+            'display' => ['format' => 1, 'label' => 'All Base Stats'],
          ],
          '160' => [
             'name' => 'SE_MakeDrunk',
-            'label'   => 'Mitigate Spell Damage by %',
-            'text' => 'foo'
+            'label'   => 'Drunk',
+            'display' => [
+               'format' => 'Intoxicate if Alcohol Tolerance is under {{effect:base}}',
+            ],
          ],
          '161' => [
             'name' => 'SE_MitigateSpellDamage',
             'label'   => 'Mitigate Spell Damage by %',
-            'text' => 'foo'
+            'display' => ['format' => 24, 'label' => 'Spell'],
          ],
          '162' => [
             'name' => 'SE_MitigateMeleeDamage',
             'label'   => 'Mitigate Melee Damage by %',
-            'text' => 'foo'
+            'display' => ['format' => 24, 'label' => 'Melee'],
          ],
          '163' => [
             'name' => 'SE_NegateAttacks',
             'label'   => 'Block Next Spell',
-            'text' => 'foo'
+            'display' => ['format' => 25],
          ],
          '167' => [
             'name' => 'SE_PetPowerIncrease',
             'label'   => 'Increase Pet Power',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '168' => [
             'name'    => 'SE_MeleeMitigation',
@@ -1310,77 +1319,77 @@ class DecodeModel extends DefaultModel
          '170' => [
             'name' => 'SE_SpellCritChance',
             'label'   => 'Increase Spell Crit Rate',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '171' => [
             'name' => 'SE_CripplingBlowChance',
             'label'   => 'Increase Crippling Blow Rate',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '172' => [
             'name' => 'SE_AvoidMeleeChance',
             'label'   => 'Increase Chance to Avoid Melee',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '173' => [
             'name' => 'SE_RiposteChance',
             'label'   => 'Increase Riposte Rate',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '174' => [
             'name' => 'SE_DodgeChance',
             'label'   => 'Increase Dodge Rate',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '175' => [
             'name' => 'SE_ParryChance',
             'label'   => 'Increase Parry Rate',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '176' => [
             'name' => 'SE_DualWieldChance',
             'label'   => 'Increase Dual Wield Rate',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '177' => [
             'name' => 'SE_DoubleAttackChance',
             'label'   => 'Increase Double Attack Rate',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '178' => [
             'name' => 'SE_MeleeLifetap',
             'label'   => 'Melee Lifetap',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '179' => [
             'name' => 'SE_AllInstrumentMod',
             'label'   => 'Increase All Instrument Mod',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '180' => [
             'name' => 'SE_ResistSpellChance',
             'label'   => 'Increase Chance to Resist Spells',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '181' => [
             'name' => 'SE_ResistFearChance',
             'label'   => 'Increase Chance to Resist Fear',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '182' => [
             'name' => 'SE_HundredHands',
             'label'   => 'Hundred Hands',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '183' => [
             'name' => 'SE_MeleeSkillCheck',
             'label'   => 'Increase Chance to Hit with Skill',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '184' => [
             'name' => 'SE_HitChance',
             'label'   => 'Increase Chance to Hit',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '185' => [
             'name' => 'SE_DamageModifier',
@@ -1390,7 +1399,7 @@ class DecodeModel extends DefaultModel
          '186' => [
             'name' => 'SE_MinDamageModifier',
             'label'   => 'Increase Min Damage with Skill',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '201' => [
             'name'    => 'SE_RangedProc',
@@ -1400,7 +1409,7 @@ class DecodeModel extends DefaultModel
          '254' => [
             'name' => 'SE_Blank',
             'label'   => 'Blank',
-            'text' => 'foo'
+            'text' => 'missing'
          ],
          '323' => [
             'name'    => 'SE_DefensiveProc',

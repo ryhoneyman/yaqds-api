@@ -493,10 +493,53 @@ class SpellModel extends DefaultModel
 
             break;
          }
-         // Percentage up to max
+         // Percentage up to max / generic percentage with adjust
          case 19: {
-            $maximum = ($values['effect:max']) ? sprintf(" up to %s {{effect:units}}",$values['effect:max']) : '';
+            $maximum = ($values['effect:max']) ? sprintf(" up to %s {{effect:units}}",$values['effect:max'].$values['effect:qualifier']) : '';
             $effectFormat .= sprintf("{{effect:adjust}} {{effect:label}} by {{effect:base}}%%%s",$maximum);
+            break;
+         }
+         // Screech Attack
+         case 20: {
+            if ($values['effect:base'] == 1)       { $effectFormat = "Apply Screech Immunity"; }
+            else if ($values['effect:base'] == -1) { $effectFormat = "Check Screech Immunity"; }
+            break;
+         }
+         // Death Save
+         case 21: {
+            $amountHealed   = ($values['effect:max'] > 0) ? $values['effect:max'] : (($values['effect:base'] == 1) ? 300 : (($values['effect:base'] == 2) ? 8000 : 0));
+            $minLevel       = ($values['effect:limit'] > 0) ? $values['effect:limit'] : null;
+            $triggerPercent = ($values['triggerPercent'] > 0) ? $values['triggerPercent'] : 15;
+
+            $effectFormat = sprintf("Increase Hit Points by %d when Current HP falls below %d%%%s", $amountHealed, $triggerPercent, ($minLevel) ? " (Minimum Level $minLevel)" : '');
+            break;
+         }
+         // Balance Party HP
+         case 22: {
+            $effectFormat = sprintf("Balance Party HP (%d%% Penalty)%s",$values['effect:base'],($values['effect:limit'] > 0) ? sprintf(" Maximum HP Taken %d",$values['effect:limit']) : '');
+            break;
+         }
+         // Reflect
+         case 23: {
+            $percentDamage  = ($values['effect:max'] == 0) ? 100 : $values['effect:max'];
+            $percentChance  = $values['effect:base'];
+            $resistModifier = $values['effect:limit'] == 0 ? '' : sprintf(' %s Resist: %d',(($values['effect:limit'] > 0) ? 'Decrease' : 'Increase'),abs($values['effect:limit']));
+            $effectFormat   = sprintf("Reflect %d%% of Spell Damage back to Caster (%d%% Chance)%s", $percentDamage, $percentChance, $resistModifier);
+            break;
+         }
+         // Rune
+         case 24: {
+            $percentMitigation = $values['effect:base'];
+            $maxDamagePerHit   = $values['effect:limit'];
+            $totalDamage       = $values['effect:max'];
+            $effectFormat      = sprintf("Mitigate %d%% of Incoming {{effect:label}} Damage%s%s", $percentMitigation, ($maxDamagePerHit > 0) ? sprintf(" up to %d per Hit", $maxDamagePerHit) : '', ($totalDamage > 0) ? sprintf(" for a Total of %d Damage", $totalDamage) : '');
+            break;
+         }
+         // Negate Attacks
+         case 25: {
+            $hitAmount = $values['effect:base'];
+            $maxDamagePerHit = $values['effect:max'];
+            $effectFormat = sprintf("Negate %d Spell or Melee Attacks%s", $hitAmount, ($maxDamagePerHit > 0) ? sprintf(" up to %d Damage per Hit", $maxDamagePerHit) : '');
             break;
          }
 
@@ -515,9 +558,10 @@ class SpellModel extends DefaultModel
          $action   = $match[1];
          $rawValue = $match[2];
 
-         if (preg_match('/^abs$/i',$action))        { $value = abs($rawValue); }
-         else if (preg_match('/^mstos$/i',$action)) { $value = sprintf("%1.1f",$rawValue/1000); }
-         else if (preg_match('/^neg$/i',$action))   { $value = -$rawValue; }
+         if (preg_match('/^abs$/i',$action))            { $value = abs($rawValue); }
+         else if (preg_match('/^mstos$/i',$action))     { $value = sprintf("%1.1f",$rawValue/1000); }
+         else if (preg_match('/^neg$/i',$action))       { $value = -$rawValue; }
+         else if (preg_match('/^percent10$/i',$action)) { $value = $rawValue / 10 * 100; }
       }
 
       return $value;
