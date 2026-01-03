@@ -94,16 +94,17 @@ class Spell extends LWPLib\Base
          case 118: $result = $uBase; if ($casterLevel > 44) { $result += 20 * ($casterLevel - 44); } break;
          case 119: $result = $uBase + ($casterLevel / 8); break;
          case 121: $result = $uBase + ($casterLevel / 3); break;
-         case 123: $result = rand($uBase,abs($max));
-         case 124: $result = ($casterLevel > 50) ? $uBase + ($updownSign * ($casterLevel - 50)) : $uBase;
-         case 125: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 2 * ($casterLevel - 50)) : $uBase;
-         case 126: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 3 * ($casterLevel - 50)) : $uBase;
-         case 127: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 4 * ($casterLevel - 50)) : $uBase;
-         case 128: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 5 * ($casterLevel - 50)) : $uBase;
-         case 129: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 10 * ($casterLevel - 50)) : $uBase;
-         case 130: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 15 * ($casterLevel - 50)) : $uBase;
-         case 131: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 20 * ($casterLevel - 50)) : $uBase;
-         case 150: $result = ($casterLevel > 50) ? 10 : (($casterLevel > 45) ? 5 + $casterLevel - 45 : (($casterLevel > 40) ? 5 : (($casterLevel > 34) ? 4 : 3)));
+         case 123: $result = rand($uBase,abs($max)); break;
+         case 124: $result = ($casterLevel > 50) ? $uBase + ($updownSign * ($casterLevel - 50)) : $uBase; break;
+         case 125: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 2 * ($casterLevel - 50)) : $uBase; break;
+         case 126: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 3 * ($casterLevel - 50)) : $uBase; break;
+         case 127: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 4 * ($casterLevel - 50)) : $uBase; break;
+         case 128: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 5 * ($casterLevel - 50)) : $uBase; break;
+         case 129: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 10 * ($casterLevel - 50)) : $uBase; break;
+         case 130: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 15 * ($casterLevel - 50)) : $uBase; break;
+         case 131: $result = ($casterLevel > 50) ? $uBase + ($updownSign * 20 * ($casterLevel - 50)) : $uBase; break;
+         case 144: $result = ($casterLevel > 43) ? $uBase + ($updownSign * 10 * ($casterLevel - 43)) : $uBase; break;
+         case 150: $result = ($casterLevel > 50) ? 10 : (($casterLevel > 45) ? 5 + $casterLevel - 45 : (($casterLevel > 40) ? 5 : (($casterLevel > 34) ? 4 : 3))); break;
          case 201:
          case 202:
          case 203:
