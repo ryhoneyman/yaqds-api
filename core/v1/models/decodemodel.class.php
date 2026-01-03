@@ -1454,6 +1454,11 @@ class DecodeModel extends DefaultModel
          '503' => [
             'name'    => 'SE_Melee_Damage_Position_Mod',
             'label'   => 'Rear Arc Melee Damage Mod',
+            'display' => ['format' => 0, 'label' => 'Melee Damage Position Percent Modifier', 'inUse' => false],
+         ],
+         '504' => [
+            'name'    => 'SE_Melee_Damage_Position_Amt',
+            'label'   => 'Rear Arc Melee Damage Amt',
             'display' => ['format' => 0, 'label' => 'Melee Damage Position Modifier', 'inUse' => false],
          ],
       ];
