@@ -395,6 +395,7 @@ class SpellModel extends DefaultModel
          // Generic up to max level
          case 10: {
             if ($effectName == 'SE_Fear' && $values['effect:max'] == 0) { $values['effect:max'] = 52; }
+            else if ($effectName == 'SE_Charm' && $values['effect:max'] == 0) { $values['effect:max'] = 65; }
 
             $effectFormat .= "{{effect:label}} up to L{{effect:max}}";
 
