@@ -573,7 +573,7 @@ class DecodeModel extends DefaultModel
          '13' => [
             'name'    => 'SE_SeeInvis',
             'label'   => 'See Invis',
-            'display' => ['format' => 0, 'label' => 'See Invisibile'],
+            'display' => ['format' => 0, 'label' => 'See Invisible'],
          ],
          '14' => [
             'name'    => 'SE_WaterBreathing',
@@ -1272,31 +1272,41 @@ class DecodeModel extends DefaultModel
             'display' => ['format' => 23],
          ],
          '159' => [
-            'name' => 'SE_AllStats',
+            'name'    => 'SE_AllStats',
             'label'   => 'Increase All Stats Cap',
             'display' => ['format' => 1, 'label' => 'All Base Stats'],
          ],
          '160' => [
-            'name' => 'SE_MakeDrunk',
+            'name'    => 'SE_MakeDrunk',
             'label'   => 'Drunk',
             'display' => [
                'format' => 'Intoxicate if Alcohol Tolerance is under {{effect:base}}',
             ],
          ],
          '161' => [
-            'name' => 'SE_MitigateSpellDamage',
+            'name'    => 'SE_MitigateSpellDamage',
             'label'   => 'Mitigate Spell Damage by %',
             'display' => ['format' => 24, 'label' => 'Spell'],
          ],
          '162' => [
-            'name' => 'SE_MitigateMeleeDamage',
+            'name'    => 'SE_MitigateMeleeDamage',
             'label'   => 'Mitigate Melee Damage by %',
             'display' => ['format' => 24, 'label' => 'Melee'],
          ],
          '163' => [
-            'name' => 'SE_NegateAttacks',
+            'name'    => 'SE_NegateAttacks',
             'label'   => 'Block Next Spell',
             'display' => ['format' => 25],
+         ],
+         '164' => [
+            'name'    => 'SE_AppraiseLDonChest',
+            'label'   => 'Sense LDoN Chest',
+            'display' => ['format' => 0, 'label' => 'Sense LDoN Chest', 'inUse' => false],
+         ],
+         '165' => [
+            'name'    => 'SE_DisarmLDoNTrap',
+            'label'   => 'Disarm LDoN Trap',
+            'display' => ['format' => 0, 'label' => 'Disarm LDoN Trap', 'inUse' => false],
          ],
          '167' => [
             'name' => 'SE_PetPowerIncrease',
@@ -1430,6 +1440,21 @@ class DecodeModel extends DefaultModel
             'name'    => 'SE_SkillProcSuccess',
             'label'   => 'Skill Success Proc',
             'display' => ['format' => 17, 'label' => 'Add Skill Success Proc'],
+         ],
+         '500' => [
+            'name'    => 'SE_Fc_CastTimeMod2',
+            'label'   => 'Focus: Spell Haste',
+            'display' => ['format' => 0, 'label' => 'Focus: Spell Haste', 'inUse' => false],
+         ],
+         '501' => [
+            'name'    => 'SE_Fc_CastTimeAmt',
+            'label'   => 'Focus: Spell Cast Time',
+            'display' => ['format' => 0, 'label' => 'Focus: Spell Cast Time', 'inUse' => false],
+         ],
+         '503' => [
+            'name'    => 'SE_Melee_Damage_Position_Mod',
+            'label'   => 'Rear Arc Melee Damage Mod',
+            'display' => ['format' => 0, 'label' => 'Melee Damage Position Modifier', 'inUse' => false],
          ],
       ];
 
