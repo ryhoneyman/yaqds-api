@@ -542,6 +542,12 @@ class SpellModel extends DefaultModel
             $effectFormat = sprintf("Negate %d Spell or Melee Attacks%s", $hitAmount, ($maxDamagePerHit > 0) ? sprintf(" up to %d Damage per Hit", $maxDamagePerHit) : '');
             break;
          }
+         // Amplification
+         case 26: {
+            $percentIncrease = $values['effect:base'] / 10 * 100;
+            $effectFormat .= sprintf("{{effect:adjust}} {{effect:label}} by +%s%%", $percentIncrease);
+            break;
+         }
 
          // Custom format or generic label only
          default: $effectFormat .= ($textFormat) ? $textFormat : "{{effect:label}}";
