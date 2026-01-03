@@ -108,7 +108,7 @@ class MapController extends DefaultController
                $chanceMult = ($chanceTotal) ? (100/$chanceTotal) : 1;
                $spawnLevel = ($spawnEntry['level'] == $spawnEntry['maxlevel']) ? sprintf("L%s",$spawnEntry['level']) : sprintf("L%s-%s",$spawnEntry['level'],$spawnEntry['maxlevel']);
                
-               $spawnList[] = sprintf("%d%% %s (%s)",$spawnEntry['chance'] * $chanceMult,$spawnEntry['name'],$spawnLevel);
+               $spawnList[] = sprintf("%d^%d%% %s (%s)",$spawnEntry['id'], $spawnEntry['chance'] * $chanceMult,$spawnEntry['name'],$spawnLevel);
             }
 
             $mapData[] = sprintf("N %d, %d, %d, 255, 0, 0, %s-%s, %s, %s",
