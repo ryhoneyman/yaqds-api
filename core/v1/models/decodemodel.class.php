@@ -1037,7 +1037,7 @@ class DecodeModel extends DefaultModel
          '110' => [
             'name'    => 'SE_IncreaseArchery',
             'label'   => 'Increase Archery', 
-            'display' => ['format' => 0, 'label' => 'Increase Archery'],
+            'display' => ['format' => 1, 'label' => 'Archery'],
          ],
          '111' => [
             'name'    => 'SE_ResistAll',
@@ -1077,7 +1077,7 @@ class DecodeModel extends DefaultModel
          '118' => [
             'name'    => 'SE_Amplification',
             'label'   => 'Increase Singing Skill',
-            'display' => ['format' => 19, 'label' => 'Singing Skill', 'qualifier' => '%'],
+            'display' => ['format' => 26, 'label' => 'Singing Skill'],
          ],
          '119' => [
             'name'    => 'SE_AttackSpeed3',
