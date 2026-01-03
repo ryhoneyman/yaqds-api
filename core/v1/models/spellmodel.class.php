@@ -287,8 +287,8 @@ class SpellModel extends DefaultModel
             $effectFormat .= "{{effect:adjust}} {{effect:label}} by {{effect:minValue}}{{effect:units}}";
 
             if ($minValue != $maxValue) { 
-               if ($splurtVal) { $effectFormat .= " and {{effect:splurtLabel}} {{effect:splurtVal}} per tick, ending at {{effect:maxValue}}"; }
-               else            { $effectFormat .= " (L{{effect:minLevel}}) to {{effect:maxValue}}{{effect:units}} (L{{effect:maxLevel}})"; }
+               if ($splurtVal)     { $effectFormat .= " and {{effect:splurtLabel}} {{effect:splurtVal}} per tick, ending at {{effect:maxValue}}"; }
+               else if ($maxLevel) { $effectFormat .= " (L{{effect:minLevel}}) to {{effect:maxValue}}{{effect:units}} (L{{effect:maxLevel}})"; }
             }
             if (($hasDuration && $allowDuration) || $effectDisplay['forceDuration']) { $effectFormat .= ' per tick'; }
 
@@ -312,8 +312,10 @@ class SpellModel extends DefaultModel
                'nonsilk' => "Everyone Else by {{effect:minClientNonClothValue}}",
             ];
 
-            if ($minClientClothValue != $maxClientClothValue)       { $formats['silk']    .= " (L{{effect:minLevel}}) to {{effect:maxClientClothValue}} (L{{effect:maxLevel}})"; }
-            if ($minClientNonClothValue != $maxClientNonClothValue) { $formats['nonsilk'] .= " (L{{effect:minLevel}}) to {{effect:maxClientNonClothValue}} (L{{effect:maxLevel}})"; }
+            if ($maxLevel) {
+               if ($minClientClothValue != $maxClientClothValue)       { $formats['silk']    .= " (L{{effect:minLevel}}) to {{effect:maxClientClothValue}} (L{{effect:maxLevel}})"; }
+               if ($minClientNonClothValue != $maxClientNonClothValue) { $formats['nonsilk'] .= " (L{{effect:minLevel}}) to {{effect:maxClientNonClothValue}} (L{{effect:maxLevel}})"; }
+            }
 
             if ($hasDuration && $allowDuration) { 
                foreach (array_keys($formats) as $formatType) { $formats[$formatType] .= ' per tick'; }
@@ -433,7 +435,7 @@ class SpellModel extends DefaultModel
             $offsetMinValue  = ($minValue - 100);
             $offsetMaxValue  = ($maxValue - 100);
             $adjustLabel     = ($maxValue > 100) ? 'Increase' : 'Decrease';
-            $valueDesc       = ($offsetMinValue != $offsetMaxValue) ? sprintf("%s%% (L%s) to %s%% (L%s)",abs($offsetMinValue),$minLevel,abs($offsetMaxValue),$maxLevel) : sprintf("%s%%",abs($offsetMaxValue));
+            $valueDesc       = ($maxLevel && $offsetMinValue != $offsetMaxValue) ? sprintf("%s%% (L%s) to %s%% (L%s)",abs($offsetMinValue),$minLevel,abs($offsetMaxValue),$maxLevel) : sprintf("%s%%",abs($offsetMaxValue));
 
             $effectFormat .= sprintf("%s {{effect:label}} by %s",$adjustLabel,$valueDesc);
 
@@ -591,6 +593,8 @@ class SpellModel extends DefaultModel
    
       $minLevel = min($classList);
       $maxLevel = null;
+
+      if ($minLevel == 0 || $minLevel >= 254) { $minLevel = $maxServerLevel; }
    
       $buffFormula   = $spellData['buffdurationformula'];
       $buffDuration  = $spellData['buffduration'];
@@ -647,12 +651,15 @@ class SpellModel extends DefaultModel
          //   if (($checkValue > 0 && $checkValue >= $maxValue) || ($checkValue < 0 && $checkValue <= $maxValue)) { $maxLevel = $checkLevel; break; }
          //}
    
-         for ($checkLevel = $maxServerLevel; $checkLevel >= $minLevel; $checkLevel--) {
-            $checkValue = $spell->calculateEffectValueFormula($effectFormula,$effectBase,$effectMax,$checkLevel);
-            if ($maxValue && $maxValue != $checkValue) { break; }
-            $maxLevel = $checkLevel;
+         if ($minLevel != $maxServerLevel) {   
+            for ($checkLevel = $maxServerLevel; $checkLevel >= $minLevel; $checkLevel--) {
+               $checkValue = $spell->calculateEffectValueFormula($effectFormula,$effectBase,$effectMax,$checkLevel);
+               if ($maxValue && $maxValue != $checkValue) { break; }
+               $maxLevel = $checkLevel;
+            }
          }
-   
+         else { $minLevel = $maxServerLevel; }
+
          $effectInfo['minLevel'] = $minLevel;
          $effectInfo['maxLevel'] = $maxLevel;
    
