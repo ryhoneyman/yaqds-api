@@ -221,6 +221,7 @@ class SpellModel extends DefaultModel
       $textFormat     = $effectDisplay['format'] ?: 0;
       $textLabel      = $effectDisplay['label'];
       $textQualifier  = $effectDisplay['qualifier'] ?: '';
+      $percent10      = $effectDisplay['percent10'] ?? false;  // Used mostly in bard effects
       $textValues     = $effectDisplay['values'] ?: [];
       $allowDuration  = $effectDisplay['allowDuration'] ? true : false;
       $reverseAdjust  = $effectDisplay['reverseAdjust'] ? true : false;
@@ -241,6 +242,7 @@ class SpellModel extends DefaultModel
          'effect:minLevel'  => $minLevel,
          'effect:maxLevel'  => $maxLevel,
          'effect:splurtVal' => $splurtVal,
+         'effect:percent10' => $percent10,
          'effect:units'     => '',
       ]);
 
@@ -284,6 +286,12 @@ class SpellModel extends DefaultModel
       switch ($textFormat) {
          // Generic effect with min/max, optionally over time, optional qualifier (such as % or units) - accounts for splurt decay/cumulative
          case 1: {
+            if ($percent10) {
+               $values['effect:minValue'] = sprintf("+%d",$values['effect:minValue'] * 10);
+               $values['effect:maxValue'] = sprintf("+%d",$values['effect:maxValue'] * 10);
+               $values['effect:units']     = '%';
+            }
+
             $effectFormat .= "{{effect:adjust}} {{effect:label}} by {{effect:minValue}}{{effect:units}}";
 
             if ($minValue != $maxValue) { 
