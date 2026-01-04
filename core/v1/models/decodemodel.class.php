@@ -1077,7 +1077,7 @@ class DecodeModel extends DefaultModel
          '118' => [
             'name'    => 'SE_Amplification',
             'label'   => 'Increase Singing Skill',
-            'display' => ['format' => 26, 'label' => 'Singing Skill'],
+            'display' => ['format' => 1, 'label' => 'Singing Skill', 'percent10' => true],
          ],
          '119' => [
             'name'    => 'SE_AttackSpeed3',
